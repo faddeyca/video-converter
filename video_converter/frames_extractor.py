@@ -6,7 +6,7 @@ from moviepy.editor import *
 
 def extract_frames():
     audioclip = AudioFileClip("input.mp4")
-    audioclip.write_audiofile("audio.mp3")
+    audioclip.write_audiofile("audio.wav")
 
     currdir = os.getcwd()  # Текущая директория
 

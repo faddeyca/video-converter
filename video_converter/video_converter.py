@@ -3,4 +3,4 @@ from video_merger import merge_video
 
 
 extract_frames()
-merge_video()
+merge_video(7)
