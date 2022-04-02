@@ -1,5 +1,6 @@
 import os
 import cv2
+import moviepy.editor as mpe
 
 
 def merge_video():
@@ -21,6 +22,8 @@ def merge_video():
 
     new_video.release()
 
+    combine_audio("input.mp4", "audio.mp3", "o.mp4", frames_per_sec)
+
 
 # Извлекает информацию о входном видео
 def get_video_info(cv2video):
@@ -29,3 +32,10 @@ def get_video_info(cv2video):
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
     framecount = int(cv2video.get(cv2.CAP_PROP_FRAME_COUNT))
     return height, width, frames_per_sec, framecount
+
+
+def combine_audio(vidname, audname, outname, fps):
+    my_clip = mpe.VideoFileClip(vidname)
+    audio_background = mpe.AudioFileClip(audname)
+    final_clip = my_clip.set_audio(audio_background)
+    final_clip.write_videofile(outname, fps=fps)
