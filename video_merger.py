@@ -4,10 +4,10 @@ import moviepy.editor as mpe
 import wave
 
 
-def merge_video(speed):
-    cv2video = cv2.VideoCapture("input.mp4")
+def merge_video(speed, isRotated, fileP):
+    cv2video = cv2.VideoCapture(fileP)
 
-    height, width, frames_per_sec, framecount = get_video_info(cv2video)
+    height, width, frames_per_sec, framecount = get_video_info(cv2video, isRotated)
 
     currdir = os.getcwd()
 
@@ -31,9 +31,13 @@ def merge_video(speed):
 
 
 # Извлекает информацию о входном видео
-def get_video_info(cv2video):
+def get_video_info(cv2video, isRotated):
     height = int(cv2video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     width = int(cv2video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    if isRotated:
+        h = height
+        height = width
+        width = h
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
     framecount = int(cv2video.get(cv2.CAP_PROP_FRAME_COUNT))
     return height, width, frames_per_sec, framecount

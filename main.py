@@ -8,8 +8,10 @@ from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
+
 from frames_extractor import extract_frames
 from video_merger import merge_video
+from rotator import rotate_images
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -17,6 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QMainWindow.__init__(self)
         uic.loadUi("mainwindow.ui", self)
         self.setup()
+        self.isRotated = False
         self.makeConnections()
 
     def setup(self):
@@ -45,12 +48,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.x05Button.clicked.connect(lambda: self.amerge_video(0.5))
         self.x01Button.clicked.connect(lambda: self.amerge_video(0.1))
         self.x15Button.clicked.connect(lambda: self.amerge_video(15))
+        self.rotateButton.clicked.connect(self.rotate)
+
+    def rotate(self):
+        self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
+        self.mediaPlayer.play()
+        if self.isRotated:
+            self.isRotated = False
+        else:
+            self.isRotated = True
+        rotate_images()
+        merge_video(1, self.isRotated, self.fileP)
+        self.mediaPlayer.setMedia(QMediaContent(QUrl("output.mp4")))
+        self.mediaPlayer.play()
+        
 
     def amerge_video(self, speed):
         self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
         self.mediaPlayer.play()
-        merge_video(speed)
+        merge_video(speed, self.isRotated, self.fileP)
         self.mediaPlayer.setMedia(QMediaContent(QUrl("output.mp4")))
+        self.mediaPlayer.play()
 
 
     def newVideoAction(self):
@@ -58,6 +76,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filepath = path[0]
         if filepath == "":
             return
+        self.fileP = filepath
         self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
         self.mediaPlayer.play()
         extract_frames(filepath)
