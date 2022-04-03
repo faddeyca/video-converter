@@ -8,6 +8,8 @@ from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
+from frames_extractor import extract_frames
+from video_merger import merge_video
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -39,12 +41,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
+        self.x2Button.clicked.connect(lambda: self.amerge_video(2))
+        self.x05Button.clicked.connect(lambda: self.amerge_video(0.5))
+        self.x01Button.clicked.connect(lambda: self.amerge_video(0.1))
+        self.x15Button.clicked.connect(lambda: self.amerge_video(15))
+
+    def amerge_video(self, speed):
+        self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
+        self.mediaPlayer.play()
+        merge_video(speed)
+        self.mediaPlayer.setMedia(QMediaContent(QUrl("output.mp4")))
+
 
     def newVideoAction(self):
         path = QFileDialog.getOpenFileName(self, "Abrir", "/")
         filepath = path[0]
         if filepath == "":
             return
+        self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
+        self.mediaPlayer.play()
+        extract_frames(filepath)
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
         self.mediaPlayer.play()
 
