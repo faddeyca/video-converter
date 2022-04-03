@@ -4,15 +4,15 @@ import shutil
 from moviepy.editor import *
 
 
-def extract_frames():
-    audioclip = AudioFileClip("input.mp4")
+def extract_frames(path):
+    audioclip = AudioFileClip(path)
     audioclip.write_audiofile("audio.wav")
 
     currdir = os.getcwd()  # Текущая директория
 
     create_temp_dir(currdir)
 
-    vidcap = cv2.VideoCapture('input.mp4')
+    vidcap = cv2.VideoCapture(path)
     ok, frame = vidcap.read()  # Удачное ли извлечение кадра и сам кадр
     count = 0
     #  Извлекает и нумерует кадры, пока они не закончатся
