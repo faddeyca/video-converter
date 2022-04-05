@@ -44,10 +44,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
-        self.x2Button.clicked.connect(lambda: self.amerge_video(2))
-        self.x05Button.clicked.connect(lambda: self.amerge_video(0.5))
-        self.x01Button.clicked.connect(lambda: self.amerge_video(0.1))
-        self.x15Button.clicked.connect(lambda: self.amerge_video(15))
+        self.speedApplyButton.clicked.connect(self.amerge_video)
         self.rotateButton.clicked.connect(self.rotate)
 
     def rotate(self):
@@ -63,7 +60,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.play()
         
 
-    def amerge_video(self, speed):
+    def amerge_video(self):
+        speed = float(self.speedEdit.text())
+        if speed == 1.0:
+            return
         self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
         self.mediaPlayer.play()
         merge_video(speed, self.isRotated, self.fileP)

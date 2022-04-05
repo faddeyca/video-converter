@@ -63,58 +63,6 @@
      <string>STOP</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="x2Button">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>10</y>
-      <width>75</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>x2</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="x05Button">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>10</y>
-      <width>75</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>x0.5</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="x01Button">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>10</y>
-      <width>75</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>x0.1</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="x15Button">
-    <property name="geometry">
-     <rect>
-      <x>560</x>
-      <y>10</y>
-      <width>75</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>x15</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="rotateButton">
     <property name="geometry">
      <rect>
@@ -126,6 +74,32 @@
     </property>
     <property name="text">
      <string>Rotate</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="speedEdit">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>10</y>
+      <width>51</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="speedApplyButton">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>10</y>
+      <width>75</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apply</string>
     </property>
    </widget>
   </widget>
