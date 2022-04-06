@@ -57,7 +57,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filepath = path[0]
         if filepath == "":
             return
-        shutil.copy(filepath, os.getcwd() + "\\temp\\current.mp4")
+        shutil.copy(filepath, os.getcwd() + "\\current.mp4")
         self.show_wait()
         extract_frames(filepath)
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
@@ -95,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def play(self):
         self.firstTime = 1
         self.mediaPlayer.setMedia(QMediaContent(
-            QUrl.fromLocalFile("temp\\current.mp4")))
+            QUrl.fromLocalFile("current.mp4")))
         self.mediaPlayer.play()
 
     #  Показать ожидание

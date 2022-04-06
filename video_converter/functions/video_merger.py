@@ -7,7 +7,7 @@ from PIL import Image
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
 def merge_video(speed, firstTime):
-    cv2video = cv2.VideoCapture("temp\\current.mp4")
+    cv2video = cv2.VideoCapture("current.mp4")
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
 
     height, width, framecount = get_new_video_info()
@@ -28,7 +28,7 @@ def merge_video(speed, firstTime):
 
     combine_audio(
         "temp\\temp.mp4", "temp\\audio.wav",
-        "temp\\current.mp4", frames_per_sec * speed)
+        "current.mp4", frames_per_sec * speed)
 
     os.remove('temp\\temp.mp4')
 
