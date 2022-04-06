@@ -12,6 +12,7 @@ from PyQt5 import uic
 from functions.frames_extractor import extract_frames, create_temp_dir
 from functions.video_merger import merge_video
 from functions.rotator import rotate_images
+from functions.cutter import cut
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -25,6 +26,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def setup(self):
         self.videoOutput = self.makeVideoWidget()
         self.mediaPlayer = self.makeMediaPlayer()
+        self.slider.setRange(0, 0)
+        self.duration = 0
+        self.framesAmount = 0
 
     #  Инициализирует видеоплеер
     def makeMediaPlayer(self):
@@ -49,6 +53,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
         self.speedApplyButton.clicked.connect(self.change_speed)
         self.rotateButton.clicked.connect(self.rotate)
+        self.cutButton.clicked.connect(self.cut)
+
+        self.slider.sliderMoved.connect(self.setPosition)
+        self.mediaPlayer.positionChanged.connect(self.positionChanged)
+        self.mediaPlayer.durationChanged.connect(self.durationChanged)
 
     #  Выбрать видео для редактора
     def load_new_video(self):
@@ -85,6 +94,17 @@ class MainWindow(QtWidgets.QMainWindow):
         merge_video(1, self.firstTime)
         self.play()
 
+    #  Обрезать видео
+    def cut(self):
+        leftB = int(self.cutLeftBorder.text())
+        rightB = int(self.cutRightBorder.text())
+        duration = self.duration
+        self.cutLeftBorder.setText('0')
+        self.show_wait()
+        cut(leftB, rightB, duration)
+        merge_video(1, self.firstTime)
+        self.play()
+
     #  Сохранить текущее видео
     def save(self):
         path = QFileDialog.getSaveFileName(self, 'Save Video')
@@ -99,6 +119,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))
         self.mediaPlayer.play()
+    
+    #  Действия, когда изменена позиция видео
+    def positionChanged(self, position):
+        if self.duration == 0:
+            return
+        curr = int(self.framesAmount*position/self.duration)
+        self.currentFrameLabel.setText(str(curr))
+        self.slider.setValue(position)
+    #  Действия, когда продолжительность текущего видео изменилась
+    def durationChanged(self, duration):
+        self.duration = duration
+        self.framesAmount = len(os.listdir("frames"))
+        self.cutRightBorder.setText(str(self.framesAmount))
+        self.slider.setRange(0, duration)
+
+    #  Установить позицию в видео
+    def setPosition(self, position):
+        self.mediaPlayer.setPosition(position)
 
     #  Показать ожидание
     def show_wait(self):
@@ -116,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.speedApplyButton.setEnabled(True)
         self.rotateEdit.setEnabled(True)
         self.rotateButton.setEnabled(True)
+        self.cutButton.setEnabled(True)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])

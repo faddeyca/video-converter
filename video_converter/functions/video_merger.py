@@ -45,18 +45,18 @@ def get_new_video_info():
 
 #  Изменяет скорость аудиодорожки
 def change_audio_speed(speed, isFirstTime):
-    spf = wave.open('temp\\audio.wav', 'rb')
-    rate = spf.getframerate()
-    signal = spf.readframes(-1)
-    spf.close()
+    audio = wave.open('temp\\audio.wav', 'rb')
+    rate = audio.getframerate()
+    signal = audio.readframes(-1)
+    audio.close()
     os.remove('temp\\audio.wav')
 
-    wf = wave.open('temp\\audio.wav', 'wb')
-    wf.setnchannels(1)
-    wf.setsampwidth(2)
-    wf.setframerate(rate * isFirstTime * speed)
-    wf.writeframes(signal)
-    wf.close()
+    new_audio = wave.open('temp\\audio.wav', 'wb')
+    new_audio.setnchannels(1)
+    new_audio.setsampwidth(2)
+    new_audio.setframerate(rate * isFirstTime * speed)
+    new_audio.writeframes(signal)
+    new_audio.close()
 
 
 #  Слияние аудио и видео
