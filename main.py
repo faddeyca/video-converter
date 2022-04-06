@@ -1,14 +1,11 @@
-# This Python file uses the following encoding: utf-8
 import sys
-import cv2
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QVBoxLayout
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
 from PyQt5.QtCore import QUrl
-from PyQt5 import uic
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5 import uic
 
 from frames_extractor import extract_frames
 from video_merger import merge_video
@@ -75,7 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def newVideoAction(self):
-        path = QFileDialog.getOpenFileName(self, "Choose video", "/")
+        path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
         self.firstTime = 2
         filepath = path[0]
         if filepath == "":
@@ -86,6 +83,13 @@ class MainWindow(QtWidgets.QMainWindow):
         extract_frames(filepath)
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
         self.mediaPlayer.play()
+        self.playButton.setEnabled(True)
+        self.pauseButton.setEnabled(True)
+        self.stopButton.setEnabled(True)
+        self.speedEdit.setEnabled(True)
+        self.speedApplyButton.setEnabled(True)
+        self.rotateEdit.setEnabled(True)
+        self.rotateButton.setEnabled(True)
 
 
 if __name__ == "__main__":

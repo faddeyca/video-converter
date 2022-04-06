@@ -31,8 +31,10 @@ def merge_video(speed, fileP, firstTime):
         "pre_output.mp4", "audio.wav",
         "output.mp4", frames_per_sec * speed)
 
+    os.remove('pre_output.mp4')
 
-# Извлекает информацию о выходном видео
+
+# Получает информацию о выходном видео
 def get_new_video_info():
     filename = os.getcwd() + r"\temp"
     image = Image.open(filename + "\\0.png")
@@ -44,20 +46,16 @@ def get_new_video_info():
 
 # Изменяет скорость аудиодорожки
 def change_audio_speed(speed, firstTime):
-    CHANNELS = 1
-    swidth = 2
-    Change_RATE = speed
-
     spf = wave.open('audio.wav', 'rb')
-    RATE = spf.getframerate() * firstTime * speed
+    rate = spf.getframerate()
     signal = spf.readframes(-1)
     spf.close()
-
     os.remove('audio.wav')
+    
     wf = wave.open('audio.wav', 'wb')
-    wf.setnchannels(CHANNELS)
-    wf.setsampwidth(swidth)
-    wf.setframerate(RATE)
+    wf.setnchannels(1)
+    wf.setsampwidth(2)
+    wf.setframerate(rate * firstTime * speed)
     wf.writeframes(signal)
     wf.close()
 
