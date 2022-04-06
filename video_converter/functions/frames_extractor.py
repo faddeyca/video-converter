@@ -15,9 +15,11 @@ def extract_frames(path):
     count = 0
     currdir = os.getcwd()
     while ok:
-        cv2.imwrite(os.path.join(currdir + "\\frames", "%d.png" % count), frame)
+        cv2.imwrite(
+            os.path.join(currdir + "\\frames", "%d.png" % count), frame)
         ok, frame = vidcap.read()
         count += 1
+
 
 #  Создает временные папки
 def create_temp_dir():
@@ -28,4 +30,3 @@ def create_temp_dir():
     if "temp" in files:
         shutil.rmtree(os.getcwd() + "\\temp")
     os.makedirs("temp")
-

@@ -50,7 +50,7 @@ def change_audio_speed(speed, isFirstTime):
     signal = spf.readframes(-1)
     spf.close()
     os.remove('temp\\audio.wav')
-    
+
     wf = wave.open('temp\\audio.wav', 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(2)

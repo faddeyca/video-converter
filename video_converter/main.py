@@ -63,7 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
         self.mediaPlayer.play()
         self.enable_buttons()
-    
+
     #  Изменить скорость в заданное количество раз
     def change_speed(self):
         speed = float(self.speedEdit.text())
