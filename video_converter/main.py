@@ -67,6 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Изменить скорость в заданное количество раз
     def change_speed(self):
         speed = float(self.speedEdit.text())
+        self.speedEdit.setText('1')
         if speed == 1.0:
             return
         self.show_wait()
@@ -76,6 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Повернуть видео на заданный угол
     def rotate(self):
         degrees = float(self.rotateEdit.text())
+        self.rotateEdit.setText('0')
         if degrees == 0:
             return
         self.show_wait()
@@ -85,11 +87,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Сохранить текущее видео
     def save(self):
-        name = QFileDialog.getSaveFileName(self, 'Save File')
-        file = open(name, 'w')
-        text = self.textEdit.toPlainText()
-        file.write(text)
-        file.close()
+        path = QFileDialog.getSaveFileName(self, 'Save Video')
+        filepath = path[0]
+        if filepath == "":
+            return
+        shutil.copy(os.getcwd() + "\\current.mp4", filepath + ".mp4")
 
     #  Воспроизвести текущее видео
     def play(self):
