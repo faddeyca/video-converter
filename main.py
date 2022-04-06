@@ -1,5 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import sys
+import cv2
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout
@@ -19,7 +20,6 @@ class MainWindow(QtWidgets.QMainWindow):
         QMainWindow.__init__(self)
         uic.loadUi("mainwindow.ui", self)
         self.setup()
-        self.isRotated = False
         self.makeConnections()
 
     def setup(self):
@@ -48,14 +48,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateButton.clicked.connect(self.rotate)
 
     def rotate(self):
+        degrees = float(self.rotateEdit.text())
+        if degrees == 0:
+            return
         self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
         self.mediaPlayer.play()
-        if self.isRotated:
-            self.isRotated = False
-        else:
-            self.isRotated = True
-        rotate_images()
-        merge_video(1, self.isRotated, self.fileP)
+        rotate_images(degrees)
+        merge_video(1, self.fileP, self.firstTime)
+        self.firstTime = 1
+        self.fileP = "output.mp4"
         self.mediaPlayer.setMedia(QMediaContent(QUrl("output.mp4")))
         self.mediaPlayer.play()
         
@@ -66,13 +67,16 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.mediaPlayer.setMedia(QMediaContent(QUrl("wait.png")))
         self.mediaPlayer.play()
-        merge_video(speed, self.isRotated, self.fileP)
+        merge_video(speed, self.fileP, self.firstTime)
+        self.firstTime = 1
+        self.fileP = "output.mp4"
         self.mediaPlayer.setMedia(QMediaContent(QUrl("output.mp4")))
         self.mediaPlayer.play()
 
 
     def newVideoAction(self):
-        path = QFileDialog.getOpenFileName(self, "Abrir", "/")
+        path = QFileDialog.getOpenFileName(self, "Choose video", "/")
+        self.firstTime = 2
         filepath = path[0]
         if filepath == "":
             return

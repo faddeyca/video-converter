@@ -2,12 +2,14 @@ import os
 import cv2
 import moviepy.editor as mpe
 import wave
+from PIL import Image
 
 
-def merge_video(speed, isRotated, fileP):
+def merge_video(speed, fileP, firstTime):
     cv2video = cv2.VideoCapture(fileP)
+    frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
 
-    height, width, frames_per_sec, framecount = get_video_info(cv2video, isRotated)
+    height, width, framecount = get_new_video_info()
 
     currdir = os.getcwd()
 
@@ -23,40 +25,39 @@ def merge_video(speed, isRotated, fileP):
 
     new_video.release()
 
-    change_audio_speed(speed)
+    change_audio_speed(speed, firstTime)
 
     combine_audio(
-        "pre_output.mp4", "new_audio.wav",
+        "pre_output.mp4", "audio.wav",
         "output.mp4", frames_per_sec * speed)
 
 
-# Извлекает информацию о входном видео
-def get_video_info(cv2video, isRotated):
-    height = int(cv2video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    width = int(cv2video.get(cv2.CAP_PROP_FRAME_WIDTH))
-    if isRotated:
-        h = height
-        height = width
-        width = h
-    frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
-    framecount = int(cv2video.get(cv2.CAP_PROP_FRAME_COUNT))
-    return height, width, frames_per_sec, framecount
+# Извлекает информацию о выходном видео
+def get_new_video_info():
+    filename = os.getcwd() + r"\temp"
+    image = Image.open(filename + "\\0.png")
+    height = int(image.height)
+    width = int(image.width)
+    framecount = len(os.listdir("temp"))
+    return height, width, framecount
 
 
 # Изменяет скорость аудиодорожки
-def change_audio_speed(speed):
+def change_audio_speed(speed, firstTime):
     CHANNELS = 1
     swidth = 2
     Change_RATE = speed
 
     spf = wave.open('audio.wav', 'rb')
-    RATE = spf.getframerate()
+    RATE = spf.getframerate() * firstTime * speed
     signal = spf.readframes(-1)
+    spf.close()
 
-    wf = wave.open('new_audio.wav', 'wb')
+    os.remove('audio.wav')
+    wf = wave.open('audio.wav', 'wb')
     wf.setnchannels(CHANNELS)
     wf.setsampwidth(swidth)
-    wf.setframerate(RATE*Change_RATE*2)
+    wf.setframerate(RATE)
     wf.writeframes(signal)
     wf.close()
 
