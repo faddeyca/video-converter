@@ -119,7 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))
         self.mediaPlayer.play()
-    
+
     #  Действия, когда изменена позиция видео
     def positionChanged(self, position):
         if self.duration == 0:
@@ -127,6 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
         curr = int(self.framesAmount*position/self.duration)
         self.currentFrameLabel.setText(str(curr))
         self.slider.setValue(position)
+
     #  Действия, когда продолжительность текущего видео изменилась
     def durationChanged(self, duration):
         self.duration = duration
