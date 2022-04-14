@@ -2,6 +2,7 @@ import sys
 import os
 import shutil
 from pathlib import Path
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
@@ -14,7 +15,7 @@ from functions.frames_extractor import extract_frames, create_temp_dir
 from functions.video_merger import merge_video
 from functions.rotator import rotate_images
 from functions.cutter import cut
-import ffmpeg
+from functions.photo_adder import add_photo
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -56,10 +57,50 @@ class MainWindow(QtWidgets.QMainWindow):
         self.speedApplyButton.clicked.connect(self.change_speed)
         self.rotateButton.clicked.connect(self.rotate)
         self.cutButton.clicked.connect(self.cut)
+        self.photoChooseButton.clicked.connect(self.load_photo)
+        self.addPhotoButton.clicked.connect(self.add_photo)
+        self.fragmentChooseButton.clicked.connect(self.load_fragment)
+        self.putFragmentOnLeftButton.clicked.connect(lambda: self.put_fragment(0))
+        self.putFragmentOnRightButton.clicked.connect(lambda: self.put_fragment(1))
 
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
+    #переделать
+    def put_fragment(self, pos):
+        clip1 = VideoFileClip("current.mp4")
+        clip2 = VideoFileClip(os.getcwd() + (str)(Path("/temp/fragment.mp4")))
+        final_clip = concatenate_videoclips([clip1, clip2])
+        final_clip.write_videofile("current.mp4")
+        self.play()
+
+    def load_fragment(self):
+        path = QFileDialog.getOpenFileName(self, "Choose fragment video", "*.mp4")
+        filepath = path[0]
+        if filepath == "":
+            return
+        shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/fragment.mp4")))
+        self.fragmentLabel.setText(filepath)
+        self.putFragmentOnLeftButton.setEnabled(True)
+        self.putFragmentOnRightButton.setEnabled(True)
+
+    def add_photo(self):
+        leftB = int(self.photoLeftBorder.text())
+        rightB = int(self.photoRightBorder.text())
+        add_photo(leftB, rightB)
+        merge_video(1, self.firstTime)
+        self.play()
+
+    def load_photo(self):
+        path = QFileDialog.getOpenFileName(self, "Choose photo", "*.png")
+        filepath = path[0]
+        if filepath == "":
+            return
+        shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/photo.png")))
+        self.photoLabel.setText(filepath)
+        self.photoLeftBorder.setEnabled(True)
+        self.photoRightBorder.setEnabled(True)
+        self.addPhotoButton.setEnabled(True)
 
     #  Выбрать видео для редактора
     def load_new_video(self):
@@ -160,6 +201,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cutButton.setEnabled(True)
         self.cutLeftBorder.setEnabled(True)
         self.cutRightBorder.setEnabled(True)
+        self.photoChooseButton.setEnabled(True)
+        self.fragmentChooseButton.setEnabled(True)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
