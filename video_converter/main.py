@@ -77,7 +77,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Изменить скорость в заданное количество раз
     def change_speed(self):
-        ffmpeg.set
         speed = float(self.speedEdit.text())
         self.speedEdit.setText("1")
         if speed == 1.0:
