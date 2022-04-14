@@ -3,6 +3,7 @@ import cv2
 import wave
 import moviepy.editor as mpe
 from PIL import Image
+from pathlib import Path
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
@@ -13,12 +14,12 @@ def merge_video(speed, firstTime):
     height, width, framecount = get_new_video_info()
 
     new_video = cv2.VideoWriter(
-        'temp\\temp.mp4', cv2.VideoWriter_fourcc(*'mp4v'),
+        (str)(Path("temp/temp.mp4")), cv2.VideoWriter_fourcc(*"mp4v"),
         frames_per_sec * speed, (width, height))
 
     currdir = os.getcwd()
     for count in range(framecount):
-        filename = currdir + "\\frames\\" + str(count) + ".png"
+        filename = currdir + (str)(Path("/frames")) + (str)(Path("/")) + str(count) + ".png"
         img = cv2.imread(filename)
         new_video.write(img)
 
@@ -27,16 +28,16 @@ def merge_video(speed, firstTime):
     change_audio_speed(speed, firstTime)
 
     combine_audio(
-        "temp\\temp.mp4", "temp\\audio.wav",
+        (str)(Path("temp/temp.mp4")), (str)(Path("temp/audio.wav")),
         "current.mp4", frames_per_sec * speed)
 
-    os.remove('temp\\temp.mp4')
+    os.remove((str)(Path("temp/temp.mp4")))
 
 
 #  Получает информацию о выходном видео
 def get_new_video_info():
-    filename = os.getcwd() + "\\frames"
-    image = Image.open(filename + "\\0.png")
+    filename = os.getcwd() + (str)(Path("/frames"))
+    image = Image.open(filename + (str)(Path("/0.png")))
     height = int(image.height)
     width = int(image.width)
     framecount = len(os.listdir("frames"))
@@ -45,13 +46,13 @@ def get_new_video_info():
 
 #  Изменяет скорость аудиодорожки
 def change_audio_speed(speed, isFirstTime):
-    audio = wave.open('temp\\audio.wav', 'rb')
+    audio = wave.open((str)(Path("temp/audio.wav")), "rb")
     rate = audio.getframerate()
     signal = audio.readframes(-1)
     audio.close()
-    os.remove('temp\\audio.wav')
+    os.remove((str)(Path("temp/audio.wav")))
 
-    new_audio = wave.open('temp\\audio.wav', 'wb')
+    new_audio = wave.open((str)(Path("temp/audio.wav")), "wb")
     new_audio.setnchannels(1)
     new_audio.setsampwidth(2)
     new_audio.setframerate(rate * isFirstTime * speed)

@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+from pathlib import Path
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
@@ -13,12 +14,13 @@ from functions.frames_extractor import extract_frames, create_temp_dir
 from functions.video_merger import merge_video
 from functions.rotator import rotate_images
 from functions.cutter import cut
+import ffmpeg
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        uic.loadUi("video_converter\\mainwindow.ui", self)
+        uic.loadUi((str)(Path("video_converter/mainwindow.ui")), self)
         self.setup()
         self.make_connections()
 
@@ -66,7 +68,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filepath = path[0]
         if filepath == "":
             return
-        shutil.copy(filepath, os.getcwd() + "\\current.mp4")
+        shutil.copy(filepath, os.getcwd() + (str)(Path("/current.mp4")))
         self.show_wait()
         extract_frames(filepath)
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
@@ -75,8 +77,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Изменить скорость в заданное количество раз
     def change_speed(self):
+        ffmpeg.set
         speed = float(self.speedEdit.text())
-        self.speedEdit.setText('1')
+        self.speedEdit.setText("1")
         if speed == 1.0:
             return
         self.show_wait()
@@ -86,7 +89,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Повернуть видео на заданный угол
     def rotate(self):
         degrees = float(self.rotateEdit.text())
-        self.rotateEdit.setText('0')
+        self.rotateEdit.setText("0")
         if degrees == 0:
             return
         self.show_wait()
@@ -99,7 +102,7 @@ class MainWindow(QtWidgets.QMainWindow):
         leftB = int(self.cutLeftBorder.text())
         rightB = int(self.cutRightBorder.text())
         duration = self.duration
-        self.cutLeftBorder.setText('0')
+        self.cutLeftBorder.setText("0")
         self.show_wait()
         cut(leftB, rightB, duration)
         merge_video(1, self.firstTime)
@@ -107,11 +110,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Сохранить текущее видео
     def save(self):
-        path = QFileDialog.getSaveFileName(self, 'Save Video')
+        path = QFileDialog.getSaveFileName(self, "Save Video")
         filepath = path[0]
         if filepath == "":
             return
-        shutil.copy(os.getcwd() + "\\current.mp4", filepath + ".mp4")
+        shutil.copy(os.getcwd() + (str)(Path("/current.mp4")), filepath + ".mp4")
 
     #  Воспроизвести текущее видео
     def play(self):
@@ -142,7 +145,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Показать ожидание
     def show_wait(self):
         self.mediaPlayer.setMedia(QMediaContent(
-            QUrl.fromLocalFile('video_converter\\pictures\\wait.png')))
+            QUrl.fromLocalFile((str)(Path("video_converter/pictures/wait.png")))))
         self.mediaPlayer.play()
 
     #  Включить кнопки
@@ -156,6 +159,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateEdit.setEnabled(True)
         self.rotateButton.setEnabled(True)
         self.cutButton.setEnabled(True)
+        self.cutLeftBorder.setEnabled(True)
+        self.cutRightBorder.setEnabled(True)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
