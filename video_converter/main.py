@@ -14,6 +14,7 @@ from functions.frames_extractor import extract_frames, create_temp_dir
 from functions.video_merger import merge_video
 from functions.rotator import rotate_images
 from functions.cutter import cut
+import ffmpeg
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -76,6 +77,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Изменить скорость в заданное количество раз
     def change_speed(self):
+        ffmpeg.set
         speed = float(self.speedEdit.text())
         self.speedEdit.setText("1")
         if speed == 1.0:
@@ -156,6 +158,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateEdit.setEnabled(True)
         self.rotateButton.setEnabled(True)
         self.cutButton.setEnabled(True)
+        self.cutLeftBorder.setEnabled(True)
+        self.cutRightBorder.setEnabled(True)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
