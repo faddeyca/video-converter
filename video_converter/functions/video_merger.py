@@ -1,13 +1,13 @@
 import os
 import cv2
-import wave
+from pydub import AudioSegment
 import moviepy.editor as mpe
 from PIL import Image
 from pathlib import Path
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
-def merge_video(speed, firstTime):
+def merge_video(speed):
     cv2video = cv2.VideoCapture("current.mp4")
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
 
@@ -26,7 +26,9 @@ def merge_video(speed, firstTime):
 
     new_video.release()
 
-    change_audio_speed(speed, firstTime)
+    audio = AudioSegment.from_mp3((str)(Path("temp/audio.wav")))
+    new_audio = change_audio_speed(audio, speed)
+    new_audio.export((str)(Path("temp/audio.wav")), format = "wav")
 
     combine_audio(
         (str)(Path("temp/temp.mp4")), (str)(Path("temp/audio.wav")),
@@ -45,19 +47,11 @@ def get_new_video_info():
 
 
 #  Изменяет скорость аудиодорожки
-def change_audio_speed(speed, firstTime):
-    audio = wave.open((str)(Path("temp/audio.wav")), "rb")
-    rate = audio.getframerate()
-    signal = audio.readframes(-1)
-    audio.close()
-    os.remove((str)(Path("temp/audio.wav")))
-
-    new_audio = wave.open((str)(Path("temp/audio.wav")), "wb")
-    new_audio.setnchannels(1)
-    new_audio.setsampwidth(2)
-    new_audio.setframerate(rate * firstTime * speed)
-    new_audio.writeframes(signal)
-    new_audio.close()
+def change_audio_speed(sound, speed=1.0):
+    sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={
+         "frame_rate": int(sound.frame_rate * speed)
+      })
+    return sound_with_altered_frame_rate.set_frame_rate(sound.frame_rate)
 
 
 #  Слияние аудио и видео

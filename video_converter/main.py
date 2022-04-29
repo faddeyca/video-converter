@@ -29,7 +29,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.videoOutput = self.makeVideoWidget()
         self.mediaPlayer = self.makeMediaPlayer()
         self.slider.setRange(0, 0)
-        self.firstTime = 2
         self.duration = 0
         self.framesAmount = 0
         self.history_index = 0
@@ -95,8 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
         leftB = int(self.photoLeftBorder.text())
         rightB = int(self.photoRightBorder.text())
         add_photo(leftB, rightB)
-        merge_video(1, self.firstTime)
-        self.firstTime = 1
+        merge_video(1)
         self.add_to_history()
         self.play()
 
@@ -133,8 +131,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if speed == 1.0:
             return
         self.show_wait()
-        merge_video(speed, self.firstTime)
-        self.firstTime = 1
+        merge_video(speed)
         self.add_to_history()
         extract_frames()
         self.play()
@@ -147,8 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.show_wait()
         rotate_images(degrees)
-        merge_video(1, self.firstTime)
-        self.firstTime = 1
+        merge_video(1)
         self.add_to_history()
         self.play()
 
@@ -160,8 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cutLeftBorder.setText("0")
         self.show_wait()
         cut(leftB, rightB, duration)
-        merge_video(1, self.firstTime)
-        self.firstTime = 1
+        merge_video(1)
         self.add_to_history()
         self.play()
 
