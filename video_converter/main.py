@@ -138,8 +138,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if degrees == 0:
             return
         self.show_wait()
-        rotate_images(degrees)
-        process_video(1)
+        process_video(1, funcFrame=lambda x, y: rotate_images(x, degrees, y))
         self.add_to_history()
         self.play()
 
