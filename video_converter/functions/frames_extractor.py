@@ -6,12 +6,12 @@ from pathlib import Path
 
 
 #  Извлекает все кадры и аудио дорожку из видео из path
-def extract_frames(path):
+def extract_frames():
     create_temp_dir()
-    audioclip = AudioFileClip(path)
+    audioclip = AudioFileClip("current.mp4")
     audioclip.write_audiofile((str)(Path("temp/audio.wav")))
 
-    vidcap = cv2.VideoCapture(path)
+    vidcap = cv2.VideoCapture("current.mp4")
     ok, frame = vidcap.read()
     count = 0
     currdir = os.getcwd() + (str)(Path("/frames"))

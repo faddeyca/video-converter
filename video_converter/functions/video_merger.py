@@ -11,14 +11,27 @@ def merge_video(speed, firstTime):
     cv2video = cv2.VideoCapture("current.mp4")
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
 
-    height, width, framecount = get_new_video_info()
+    height, width = get_new_video_info()
 
     new_video = cv2.VideoWriter(
         (str)(Path("temp/temp.mp4")), cv2.VideoWriter_fourcc(*"mp4v"),
-        frames_per_sec * speed, (width, height))
+        frames_per_sec, (width, height))
 
+    framesAmount = len(os.listdir("frames"))
+    not_deleted = [True] * framesAmount
+    for i in range(0, framesAmount, 2):
+        not_deleted[i] = False
+        os.remove("frames" + (str)(Path("/")) + str(i) + ".png")
+        
+    j = 0
+    for i in range(len(not_deleted)):
+        if not_deleted[i]:
+            os.rename("frames" + (str)(Path("/")) + str(i) + ".png", "frames" + (str)(Path("/")) + str(j) + ".png")
+            j += 1
+
+    framesAmount = len(os.listdir("frames"))
     currdir = os.getcwd()
-    for count in range(framecount):
+    for count in range(framesAmount):
         filename = currdir + (str)(Path("/frames")) + (str)(Path("/")) + str(count) + ".png"
         img = cv2.imread(filename)
         new_video.write(img)
@@ -29,7 +42,7 @@ def merge_video(speed, firstTime):
 
     combine_audio(
         (str)(Path("temp/temp.mp4")), (str)(Path("temp/audio.wav")),
-        "current.mp4", frames_per_sec * speed)
+        "current.mp4", frames_per_sec)
 
     os.remove((str)(Path("temp/temp.mp4")))
 
@@ -40,8 +53,7 @@ def get_new_video_info():
     image = Image.open(filename + (str)(Path("/0.png")))
     height = int(image.height)
     width = int(image.width)
-    framecount = len(os.listdir("frames"))
-    return height, width, framecount
+    return height, width
 
 
 #  Изменяет скорость аудиодорожки

@@ -2,7 +2,6 @@ import sys
 import os
 import shutil
 from pathlib import Path
-from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
@@ -16,6 +15,7 @@ from functions.video_merger import merge_video
 from functions.rotator import rotate_images
 from functions.cutter import cut
 from functions.photo_adder import add_photo
+from functions.fragment_adder import add_fragment_on_right
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -25,13 +25,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup()
         self.make_connections()
 
-    #  Инициализирует видеоплеер
+    #  Настройка
     def setup(self):
         self.videoOutput = self.makeVideoWidget()
         self.mediaPlayer = self.makeMediaPlayer()
         self.slider.setRange(0, 0)
         self.duration = 0
         self.framesAmount = 0
+        self.history_index = 0
+        self.history_max = 0
 
     #  Инициализирует видеоплеер
     def makeMediaPlayer(self):
@@ -51,6 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def make_connections(self):
         self.actionNew_video.triggered.connect(self.load_new_video)
         self.actionSave.triggered.connect(self.save)
+        self.actionUndo.triggered.connect(self.undo_history)
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
@@ -66,14 +69,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
-    #переделать
+
+
+    #  Вставить фрагмент
     def put_fragment(self, pos):
-        clip1 = VideoFileClip("current.mp4")
-        clip2 = VideoFileClip(os.getcwd() + (str)(Path("/temp/fragment.mp4")))
-        final_clip = concatenate_videoclips([clip1, clip2])
-        final_clip.write_videofile("current.mp4")
+        add_fragment_on_right()
+        self.add_to_history()
         self.play()
 
+    #  Загрузить фрагмент
     def load_fragment(self):
         path = QFileDialog.getOpenFileName(self, "Choose fragment video", "*.mp4")
         filepath = path[0]
@@ -84,13 +88,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.putFragmentOnLeftButton.setEnabled(True)
         self.putFragmentOnRightButton.setEnabled(True)
 
+    #  Вставить фото
     def add_photo(self):
         leftB = int(self.photoLeftBorder.text())
         rightB = int(self.photoRightBorder.text())
         add_photo(leftB, rightB)
         merge_video(1, self.firstTime)
+        self.add_to_history()
         self.play()
 
+    #  Выбрать фото для вставки
     def load_photo(self):
         path = QFileDialog.getOpenFileName(self, "Choose photo", "*.png")
         filepath = path[0]
@@ -110,8 +117,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if filepath == "":
             return
         shutil.copy(filepath, os.getcwd() + (str)(Path("/current.mp4")))
+        self.add_to_history()
         self.show_wait()
-        extract_frames(filepath)
+        extract_frames()
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
         self.mediaPlayer.play()
         self.enable_buttons()
@@ -124,6 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.show_wait()
         merge_video(speed, self.firstTime)
+        self.add_to_history()
         self.play()
 
     #  Повернуть видео на заданный угол
@@ -135,6 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_wait()
         rotate_images(degrees)
         merge_video(1, self.firstTime)
+        self.add_to_history()
         self.play()
 
     #  Обрезать видео
@@ -146,6 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.show_wait()
         cut(leftB, rightB, duration)
         merge_video(1, self.firstTime)
+        self.add_to_history()
         self.play()
 
     #  Сохранить текущее видео
@@ -154,7 +165,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filepath = path[0]
         if filepath == "":
             return
-        shutil.copy(os.getcwd() + (str)(Path("/current.mp4")), filepath + ".mp4")
+        shutil.copy(("current.mp4"), filepath + ".mp4")
 
     #  Воспроизвести текущее видео
     def play(self):
@@ -188,6 +199,26 @@ class MainWindow(QtWidgets.QMainWindow):
             QUrl.fromLocalFile((str)(Path("video_converter/pictures/wait.png")))))
         self.mediaPlayer.play()
 
+    def add_to_history(self):
+        self.actionRedo.setEnabled(False)
+        for i in range(self.history_index + 1, self.history_max):
+            os.remove("history" + (str)(Path("/")) + (str)(i) + ".mp4")
+        if self.history_index >= 1:
+            self.actionUndo.setEnabled(True)
+        shutil.copy("current.mp4", "history" + (str)(Path("/")) + (str)(self.history_index) + ".mp4")
+        self.history_index = self.history_index + 1
+        self.history_max = self.history_index + 1
+        
+    def undo_history(self):
+        self.show_wait()
+        self.actionRedo.setEnabled(True)
+        self.history_index = self.history_index - 1
+        if self.history_index == 1:
+            self.actionUndo.setEnabled(False)
+        shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
+        extract_frames()
+        self.play()
+
     #  Включить кнопки
     def enable_buttons(self):
         self.actionSave.setEnabled(True)
@@ -208,5 +239,10 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     w = MainWindow()
     create_temp_dir()
+    files = os.listdir()
+    if "history" in files:
+        s = os.getcwd() + (str)(Path("/history"))
+        shutil.rmtree(os.getcwd() + (str)(Path("/history")))
+    os.makedirs("history")
     w.show()
     sys.exit(app.exec_())
