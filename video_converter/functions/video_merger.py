@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
-def merge_video(speed, firstTime):
+def merge_video(speed):
     cv2video = cv2.VideoCapture("current.mp4")
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
 
@@ -15,19 +15,7 @@ def merge_video(speed, firstTime):
 
     new_video = cv2.VideoWriter(
         (str)(Path("temp/temp.mp4")), cv2.VideoWriter_fourcc(*"mp4v"),
-        frames_per_sec, (width, height))
-
-    framesAmount = len(os.listdir("frames"))
-    not_deleted = [True] * framesAmount
-    for i in range(0, framesAmount, 2):
-        not_deleted[i] = False
-        os.remove("frames" + (str)(Path("/")) + str(i) + ".png")
-        
-    j = 0
-    for i in range(len(not_deleted)):
-        if not_deleted[i]:
-            os.rename("frames" + (str)(Path("/")) + str(i) + ".png", "frames" + (str)(Path("/")) + str(j) + ".png")
-            j += 1
+        frames_per_sec * speed, (width, height))
 
     framesAmount = len(os.listdir("frames"))
     currdir = os.getcwd()
@@ -38,7 +26,7 @@ def merge_video(speed, firstTime):
 
     new_video.release()
 
-    change_audio_speed(speed, firstTime)
+    change_audio_speed(speed)
 
     combine_audio(
         (str)(Path("temp/temp.mp4")), (str)(Path("temp/audio.wav")),
@@ -57,7 +45,7 @@ def get_new_video_info():
 
 
 #  Изменяет скорость аудиодорожки
-def change_audio_speed(speed, isFirstTime):
+def change_audio_speed(speed):
     audio = wave.open((str)(Path("temp/audio.wav")), "rb")
     rate = audio.getframerate()
     signal = audio.readframes(-1)
@@ -67,7 +55,7 @@ def change_audio_speed(speed, isFirstTime):
     new_audio = wave.open((str)(Path("temp/audio.wav")), "wb")
     new_audio.setnchannels(1)
     new_audio.setsampwidth(2)
-    new_audio.setframerate(rate * isFirstTime * speed)
+    new_audio.setframerate(rate * 2 * speed)
     new_audio.writeframes(signal)
     new_audio.close()
 

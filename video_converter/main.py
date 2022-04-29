@@ -93,7 +93,7 @@ class MainWindow(QtWidgets.QMainWindow):
         leftB = int(self.photoLeftBorder.text())
         rightB = int(self.photoRightBorder.text())
         add_photo(leftB, rightB)
-        merge_video(1, self.firstTime)
+        merge_video(1)
         self.add_to_history()
         self.play()
 
@@ -112,7 +112,6 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Выбрать видео для редактора
     def load_new_video(self):
         path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
-        self.firstTime = 2
         filepath = path[0]
         if filepath == "":
             return
@@ -131,8 +130,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if speed == 1.0:
             return
         self.show_wait()
-        merge_video(speed, self.firstTime)
+        merge_video(speed)
         self.add_to_history()
+        extract_frames()
         self.play()
 
     #  Повернуть видео на заданный угол
@@ -143,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.show_wait()
         rotate_images(degrees)
-        merge_video(1, self.firstTime)
+        merge_video(1)
         self.add_to_history()
         self.play()
 
@@ -155,7 +155,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cutLeftBorder.setText("0")
         self.show_wait()
         cut(leftB, rightB, duration)
-        merge_video(1, self.firstTime)
+        merge_video(1)
         self.add_to_history()
         self.play()
 
@@ -169,7 +169,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Воспроизвести текущее видео
     def play(self):
-        self.firstTime = 1
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))
         self.mediaPlayer.play()
