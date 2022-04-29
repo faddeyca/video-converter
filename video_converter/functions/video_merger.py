@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
-def merge_video(speed):
+def merge_video(speed, firstTime):
     cv2video = cv2.VideoCapture("current.mp4")
     frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
 
@@ -26,7 +26,7 @@ def merge_video(speed):
 
     new_video.release()
 
-    change_audio_speed(speed)
+    change_audio_speed(speed, firstTime)
 
     combine_audio(
         (str)(Path("temp/temp.mp4")), (str)(Path("temp/audio.wav")),
@@ -45,7 +45,7 @@ def get_new_video_info():
 
 
 #  Изменяет скорость аудиодорожки
-def change_audio_speed(speed):
+def change_audio_speed(speed, firstTime):
     audio = wave.open((str)(Path("temp/audio.wav")), "rb")
     rate = audio.getframerate()
     signal = audio.readframes(-1)
@@ -55,7 +55,7 @@ def change_audio_speed(speed):
     new_audio = wave.open((str)(Path("temp/audio.wav")), "wb")
     new_audio.setnchannels(1)
     new_audio.setsampwidth(2)
-    new_audio.setframerate(rate * 2 * speed)
+    new_audio.setframerate(rate * firstTime * speed)
     new_audio.writeframes(signal)
     new_audio.close()
 
@@ -66,3 +66,4 @@ def combine_audio(input_video, input_audio, output_video, fps):
     audio_background = mpe.AudioFileClip(input_audio)
     final_clip = my_clip.set_audio(audio_background)
     final_clip.write_videofile(output_video, fps=fps)
+    my_clip.close()

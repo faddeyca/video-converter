@@ -3,12 +3,11 @@ import os
 import shutil
 from pathlib import Path
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5 import uic
 
 from functions.frames_extractor import extract_frames, create_temp_dir
 from functions.video_merger import merge_video
@@ -30,12 +29,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.videoOutput = self.makeVideoWidget()
         self.mediaPlayer = self.makeMediaPlayer()
         self.slider.setRange(0, 0)
+        self.firstTime = 2
         self.duration = 0
         self.framesAmount = 0
         self.history_index = 0
         self.history_max = 0
 
-    #  Инициализирует видеоплеер
+    #  Инициализирует медиаплеер
     def makeMediaPlayer(self):
         mediaPlayer = QMediaPlayer(self)
         mediaPlayer.setVideoOutput(self.videoOutput)
@@ -54,6 +54,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionNew_video.triggered.connect(self.load_new_video)
         self.actionSave.triggered.connect(self.save)
         self.actionUndo.triggered.connect(self.undo_history)
+        self.actionRedo.triggered.connect(self.redo_history)
+
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
@@ -93,7 +95,8 @@ class MainWindow(QtWidgets.QMainWindow):
         leftB = int(self.photoLeftBorder.text())
         rightB = int(self.photoRightBorder.text())
         add_photo(leftB, rightB)
-        merge_video(1)
+        merge_video(1, self.firstTime)
+        self.firstTime = 1
         self.add_to_history()
         self.play()
 
@@ -130,7 +133,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if speed == 1.0:
             return
         self.show_wait()
-        merge_video(speed)
+        merge_video(speed, self.firstTime)
+        self.firstTime = 1
         self.add_to_history()
         extract_frames()
         self.play()
@@ -143,7 +147,8 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.show_wait()
         rotate_images(degrees)
-        merge_video(1)
+        merge_video(1, self.firstTime)
+        self.firstTime = 1
         self.add_to_history()
         self.play()
 
@@ -155,7 +160,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cutLeftBorder.setText("0")
         self.show_wait()
         cut(leftB, rightB, duration)
-        merge_video(1)
+        merge_video(1, self.firstTime)
+        self.firstTime = 1
         self.add_to_history()
         self.play()
 
@@ -198,22 +204,34 @@ class MainWindow(QtWidgets.QMainWindow):
             QUrl.fromLocalFile((str)(Path("video_converter/pictures/wait.png")))))
         self.mediaPlayer.play()
 
+    #  Добавить в историю
     def add_to_history(self):
         self.actionRedo.setEnabled(False)
-        for i in range(self.history_index + 1, self.history_max):
+        for i in range(self.history_index + 1, self.history_max - 1):
             os.remove("history" + (str)(Path("/")) + (str)(i) + ".mp4")
         if self.history_index >= 1:
             self.actionUndo.setEnabled(True)
         shutil.copy("current.mp4", "history" + (str)(Path("/")) + (str)(self.history_index) + ".mp4")
-        self.history_index = self.history_index + 1
+        self.history_index += 1
         self.history_max = self.history_index + 1
-        
+    
+    #  Откатить изменения
     def undo_history(self):
         self.show_wait()
         self.actionRedo.setEnabled(True)
-        self.history_index = self.history_index - 1
+        self.history_index -= 1
         if self.history_index == 1:
             self.actionUndo.setEnabled(False)
+        shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
+        extract_frames()
+        self.play()
+
+    #  Вернуть изменения обрано
+    def redo_history(self):
+        self.show_wait()
+        self.history_index += 1
+        if self.history_index == self.history_max - 1:
+            self.actionRedo.setEnabled(False)
         shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
         extract_frames()
         self.play()
