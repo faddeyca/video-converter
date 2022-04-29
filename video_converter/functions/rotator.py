@@ -10,6 +10,6 @@ def rotate_images(degrees):
     for i in range(ln):
         filename = currdir + (str)(Path("/frames")) + (str)(Path("/")) + str(i) + ".png"
         im = Image.open(filename)
-        im_rotate = im.rotate(degrees, expand=True)
+        im_rotate = im.rotate(degrees)
         im_rotate.save(filename)
         im.close()

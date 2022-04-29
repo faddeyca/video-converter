@@ -329,38 +329,6 @@
      <string>Choose fragment</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="putFragmentOnLeftButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1040</x>
-      <y>550</y>
-      <width>131</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Put on the left</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="putFragmentOnRightButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>1190</x>
-      <y>550</y>
-      <width>131</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Put on the right</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

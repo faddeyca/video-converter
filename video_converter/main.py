@@ -1,3 +1,4 @@
+from multiprocessing.connection import wait
 import sys
 import os
 import shutil
@@ -64,8 +65,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.photoChooseButton.clicked.connect(self.load_photo)
         self.addPhotoButton.clicked.connect(self.add_photo)
         self.fragmentChooseButton.clicked.connect(self.load_fragment)
-        self.putFragmentOnLeftButton.clicked.connect(lambda: self.put_fragment(0))
-        self.putFragmentOnRightButton.clicked.connect(lambda: self.put_fragment(1))
 
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
@@ -93,6 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_photo(self):
         leftB = int(self.photoLeftBorder.text())
         rightB = int(self.photoRightBorder.text())
+        self.show_wait()
         add_photo(leftB, rightB)
         merge_video(1)
         self.add_to_history()
