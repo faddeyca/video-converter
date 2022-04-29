@@ -1,23 +1,16 @@
 import os
 from PIL import Image
 from pathlib import Path
-import shutil
+import cv2
 
-
-def add_photo(leftB, rightB):
-    path = os.getcwd() + (str)(Path("/temp/photo.png"))
-    img = Image.open(path)
-    height, width = get_info()
+def resize_photo(frame):
+    img = Image.open((str)(Path("temp/photo.png")))
+    height, width = frame.shape[0], frame.shape[1]
     img = img.resize((width, height), Image.ANTIALIAS)
-    img.save(path)
-    for i in range(leftB, rightB):
-        os.remove("frames" + (str)(Path("/")) + str(i) + ".png")
-    for i in range(leftB, rightB):
-        shutil.copy(path, os.getcwd() + (str)(Path("/frames")) + (str)(Path("/")) + str(i)+ ".png")
+    img.save((str)(Path("temp/photo.png")))
 
 
-def get_info():
-    image = Image.open(os.getcwd() + (str)(Path("/frames")) + (str)(Path("/0.png")))
-    height = int(image.height)
-    width = int(image.width)
-    return height, width
+def add_photo(leftB, rightB, index, frame):
+    if index >= leftB and index <= rightB:
+        return cv2.imread((str)(Path("temp/photo.png")))
+    return frame

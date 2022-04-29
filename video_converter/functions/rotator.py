@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 #  Поворачивает все кадры из frames против часовой стрелки на degrees градусов
-def rotate_images(degrees):
+def rotate_images(degrees, frame):
     ln = len(os.listdir("frames"))
     currdir = os.getcwd()
     for i in range(ln):

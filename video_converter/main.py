@@ -1,6 +1,6 @@
 from multiprocessing.connection import wait
 import sys
-import os
+import os, cv2
 import shutil
 from pathlib import Path
 
@@ -10,11 +10,10 @@ from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
-from functions.frames_extractor import extract_frames, create_temp_dir
-from functions.video_merger import merge_video
+from functions.kernel import process_video
 from functions.rotator import rotate_images
-from functions.cutter import cut
-from functions.photo_adder import add_photo
+from functions.cutter import add, cutAudio
+from functions.photo_adder import add_photo, resize_photo
 from functions.fragment_adder import add_fragment_on_right
 
 
@@ -93,8 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
         leftB = int(self.photoLeftBorder.text())
         rightB = int(self.photoRightBorder.text())
         self.show_wait()
-        add_photo(leftB, rightB)
-        merge_video(1)
+        process_video(1, funcFrame=lambda x, y: add_photo(leftB, rightB, x, y), funcBegin=lambda x: resize_photo(x))
         self.add_to_history()
         self.play()
 
@@ -118,8 +116,6 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         shutil.copy(filepath, os.getcwd() + (str)(Path("/current.mp4")))
         self.add_to_history()
-        self.show_wait()
-        extract_frames()
         self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
         self.mediaPlayer.play()
         self.enable_buttons()
@@ -131,9 +127,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if speed == 1.0:
             return
         self.show_wait()
-        merge_video(speed)
+        self.framesAmount = process_video(speed)
         self.add_to_history()
-        extract_frames()
         self.play()
 
     #  Повернуть видео на заданный угол
@@ -144,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.show_wait()
         rotate_images(degrees)
-        merge_video(1)
+        process_video(1)
         self.add_to_history()
         self.play()
 
@@ -153,10 +148,10 @@ class MainWindow(QtWidgets.QMainWindow):
         leftB = int(self.cutLeftBorder.text())
         rightB = int(self.cutRightBorder.text())
         duration = self.duration
+        framesAmount = self.framesAmount
         self.cutLeftBorder.setText("0")
         self.show_wait()
-        cut(leftB, rightB, duration)
-        merge_video(1)
+        process_video(1, funcIndex=lambda x: add(leftB, rightB, x), funcBegin=lambda x:cutAudio(leftB, rightB, duration, framesAmount))
         self.add_to_history()
         self.play()
 
@@ -184,8 +179,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     #  Действия, когда продолжительность текущего видео изменилась
     def durationChanged(self, duration):
+        vidcap = cv2.VideoCapture("current.mp4")
+        self.framesAmount = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.duration = duration
-        self.framesAmount = len(os.listdir("frames"))
         self.cutRightBorder.setText(str(self.framesAmount))
         self.slider.setRange(0, duration)
 
@@ -218,7 +214,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.history_index == 1:
             self.actionUndo.setEnabled(False)
         shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
-        extract_frames()
         self.play()
 
     #  Вернуть изменения обрано
@@ -228,7 +223,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.history_index == self.history_max - 1:
             self.actionRedo.setEnabled(False)
         shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
-        extract_frames()
         self.play()
 
     #  Включить кнопки
@@ -247,14 +241,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.photoChooseButton.setEnabled(True)
         self.fragmentChooseButton.setEnabled(True)
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-    w = MainWindow()
-    create_temp_dir()
+
+def create_temp_dir():
     files = os.listdir()
+    if "temp" in files:
+        shutil.rmtree(os.getcwd() + (str)(Path("/temp")))
+    os.makedirs("temp")
     if "history" in files:
         s = os.getcwd() + (str)(Path("/history"))
         shutil.rmtree(os.getcwd() + (str)(Path("/history")))
     os.makedirs("history")
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication([])
+    w = MainWindow()
+    create_temp_dir()
     w.show()
     sys.exit(app.exec_())

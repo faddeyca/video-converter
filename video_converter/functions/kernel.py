@@ -2,27 +2,39 @@ import os
 import cv2
 from pydub import AudioSegment
 import moviepy.editor as mpe
-from PIL import Image
 from pathlib import Path
+from moviepy.editor import *
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
-def merge_video(speed):
-    cv2video = cv2.VideoCapture("current.mp4")
-    frames_per_sec = cv2video.get(cv2.CAP_PROP_FPS)
+def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None):
+    AudioFileClip("current.mp4").write_audiofile((str)(Path("temp/audio.wav")))
 
-    height, width = get_new_video_info()
+    vidcap = cv2.VideoCapture("current.mp4")
+
+    frames_per_sec = vidcap.get(cv2.CAP_PROP_FPS)
+    ok, frame = vidcap.read()
+    height, width = frame.shape[0], frame.shape[1]
 
     new_video = cv2.VideoWriter(
         (str)(Path("temp/temp.mp4")), cv2.VideoWriter_fourcc(*"mp4v"),
         frames_per_sec * speed, (width, height))
 
-    framesAmount = len(os.listdir("frames"))
-    currdir = os.getcwd()
-    for count in range(framesAmount):
-        filename = currdir + (str)(Path("/frames")) + (str)(Path("/")) + str(count) + ".png"
-        img = cv2.imread(filename)
-        new_video.write(img)
+    if funcBegin != None:
+        funcBegin(frame)
+
+    index = 0
+    count = 0
+    while ok:
+        if funcIndex == None or (funcIndex != None and funcIndex(index)):
+            if funcFrame != None:
+                newFrame = funcFrame(index, frame)
+                new_video.write(newFrame)
+            else:
+                new_video.write(frame)
+            count += 1
+        index += 1
+        ok, frame = vidcap.read()
 
     new_video.release()
 
@@ -36,22 +48,13 @@ def merge_video(speed):
 
     os.remove((str)(Path("temp/temp.mp4")))
 
-
-#  Получает информацию о выходном видео
-def get_new_video_info():
-    filename = os.getcwd() + (str)(Path("/frames"))
-    image = Image.open(filename + (str)(Path("/0.png")))
-    height = int(image.height)
-    width = int(image.width)
-    return height, width
+    return count
 
 
 #  Изменяет скорость аудиодорожки
-def change_audio_speed(sound, speed=1.0):
-    sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={
-         "frame_rate": int(sound.frame_rate * speed)
-      })
-    return sound_with_altered_frame_rate.set_frame_rate(sound.frame_rate)
+def change_audio_speed(sound, speed):
+    audio = sound._spawn(sound.raw_data, overrides={"frame_rate": int(sound.frame_rate * speed)})
+    return audio.set_frame_rate(sound.frame_rate)
 
 
 #  Слияние аудио и видео
