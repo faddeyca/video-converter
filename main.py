@@ -1,4 +1,3 @@
-from multiprocessing.connection import wait
 import sys
 import os, cv2
 import shutil
@@ -20,7 +19,7 @@ from functions.fragment_adder import add_fragment_on_right
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        uic.loadUi((str)(Path("video_converter/mainwindow.ui")), self)
+        uic.loadUi("mainwindow.ui", self)
         self.setup()
         self.make_connections()
 
@@ -191,7 +190,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Показать ожидание
     def show_wait(self):
         self.mediaPlayer.setMedia(QMediaContent(
-            QUrl.fromLocalFile((str)(Path("video_converter/pictures/wait.png")))))
+            QUrl.fromLocalFile((str)(Path("pictures/wait.png")))))
         self.mediaPlayer.play()
 
     #  Добавить в историю
@@ -218,6 +217,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Вернуть изменения обрано
     def redo_history(self):
         self.show_wait()
+        self.actionUndo.setEnabled(True)
         self.history_index += 1
         if self.history_index == self.history_max - 1:
             self.actionRedo.setEnabled(False)

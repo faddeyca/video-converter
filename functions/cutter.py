@@ -1,4 +1,3 @@
-import cv2
 from pydub import AudioSegment
 from pathlib import Path
 
