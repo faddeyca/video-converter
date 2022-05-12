@@ -13,7 +13,7 @@ from functions.kernel import process_video
 from functions.rotator import rotate_images
 from functions.cutter import add, cutAudio
 from functions.photo_adder import add_photo, resize_photo
-from functions.fragment_adder import add_fragment_on_right
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -63,6 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.photoChooseButton.clicked.connect(self.load_photo)
         self.addPhotoButton.clicked.connect(self.add_photo)
         self.fragmentChooseButton.clicked.connect(self.load_fragment)
+        self.putOnRightButton.clicked.connect(self.put_fragment)
 
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
@@ -70,8 +71,13 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     #  Вставить фрагмент
-    def put_fragment(self, pos):
-        add_fragment_on_right()
+    def put_fragment(self):
+        self.show_wait()
+        clip1 = VideoFileClip("current.mp4")
+        clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
+        final_clip = concatenate_videoclips([clip1,clip2], method="compose")
+        os.remove("current.mp4")
+        final_clip.write_videofile("current.mp4")  
         self.add_to_history()
         self.play()
 
@@ -83,8 +89,8 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/fragment.mp4")))
         self.fragmentLabel.setText(filepath)
-        self.putFragmentOnLeftButton.setEnabled(True)
-        self.putFragmentOnRightButton.setEnabled(True)
+        #self.putFragmentOnLeftButton.setEnabled(True)
+        #self.putFragmentOnRightButton.setEnabled(True)
 
     #  Вставить фото
     def add_photo(self):
