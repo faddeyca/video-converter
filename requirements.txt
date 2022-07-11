@@ -1,0 +1,6 @@
+opencv-python
+PyQt5
+moviepy
+pydub
+pillow
+scipy
