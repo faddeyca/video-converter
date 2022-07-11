@@ -81,8 +81,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         shutil.copy(filepath, os.getcwd() + (str)(Path("/current.mp4")))
         hm.add_to_history(self)
-        self.mediaPlayer.setMedia(QMediaContent(QUrl(filepath)))
-        self.mediaPlayer.play()
+        self.play()
         self.enable_buttons()
 
     #  Сохранить текущее видео

@@ -29,8 +29,8 @@ def load_fragment(self):
         return
     shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/fragment.mp4")))
     self.fragmentLabel.setText(filepath)
-    self.putFragmentOnLeftButton.setEnabled(True)
-    self.putFragmentOnRightButton.setEnabled(True)
+    self.putOnLeftButton.setEnabled(True)
+    self.putOnRightButton.setEnabled(True)
 
 #  Вставить фото
 def add_photo(self):
