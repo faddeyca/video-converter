@@ -18,10 +18,12 @@ def put_fragment(self):
     clip1 = VideoFileClip("current.mp4")
     clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
     final_clip = concatenate_videoclips([clip1,clip2], method="compose")
+    final_clip.write_videofile("current1.mp4")
     clip1.close()
     clip2.close()
     os.remove("current.mp4")
-    final_clip.write_videofile("current.mp4")  
+    shutil.copy("current1.mp4", "current.mp4")
+    os.remove("current1.mp4")
 
 #  Загрузить фрагмент
 def load_fragment(self):
