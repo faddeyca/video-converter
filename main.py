@@ -1,7 +1,7 @@
 import sys
-import os, cv2
+import os
+import cv2
 import shutil
-from pathlib import Path
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
@@ -56,20 +56,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
-        self.speedApplyButton.clicked.connect(lambda: self.action(a.change_speed))
-        self.rotateButton.clicked.connect(lambda: self.action(a.rotate))
-        self.cutButton.clicked.connect(lambda: a.cut(self))
-        self.photoChooseButton.clicked.connect(lambda: a.load_photo(self))
-        self.addPhotoButton.clicked.connect(lambda: self.action(a.add_photo))
-        self.fragmentChooseButton.clicked.connect(lambda: a.load_fragment(self))
-        self.putOnLeftButton.clicked.connect(lambda: self.action(a.put_fragment_left))
-        self.putOnRightButton.clicked.connect(lambda: self.action(a.put_fragment))
-        self.cropButton.clicked.connect(lambda: self.action(a.crop))
+        self.speedApplyButton.clicked.connect(
+            lambda: self.action(a.change_speed))
+        self.rotateButton.clicked.connect(
+            lambda: self.action(a.rotate))
+        self.cutButton.clicked.connect(
+            lambda: a.cut(self))
+        self.photoChooseButton.clicked.connect(
+            lambda: a.load_photo(self))
+        self.addPhotoButton.clicked.connect(
+            lambda: self.action(a.add_photo))
+        self.fragmentChooseButton.clicked.connect(
+            lambda: a.load_fragment(self))
+        self.putOnLeftButton.clicked.connect(
+            lambda: self.action(a.put_fragment_left))
+        self.putOnRightButton.clicked.connect(
+            lambda: self.action(a.put_fragment))
+        self.cropButton.clicked.connect(
+            lambda: self.action(a.crop))
 
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
-
 
     def action(self, func):
         self.show_wait()
@@ -91,7 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
         filepath = path[0]
         if filepath == "":
             return
-        shutil.copy(filepath, os.getcwd() + (str)(Path("/current.mp4")))
+        shutil.copy(filepath, "current.mp4")
         hm.add_to_history(self)
         self.hw_changed()
         self.play()
@@ -134,7 +142,7 @@ class MainWindow(QtWidgets.QMainWindow):
     #  Показать ожидание
     def show_wait(self):
         self.mediaPlayer.setMedia(QMediaContent(
-            QUrl.fromLocalFile((str)(Path("pictures/wait.png")))))
+            QUrl.fromLocalFile("wait.png")))
         self.mediaPlayer.play()
 
     #  Включить кнопки
@@ -159,11 +167,10 @@ class MainWindow(QtWidgets.QMainWindow):
 def create_temp_dir():
     files = os.listdir()
     if "temp" in files:
-        shutil.rmtree(os.getcwd() + (str)(Path("/temp")))
+        shutil.rmtree("temp")
     os.makedirs("temp")
     if "history" in files:
-        s = os.getcwd() + (str)(Path("/history"))
-        shutil.rmtree(os.getcwd() + (str)(Path("/history")))
+        shutil.rmtree("history")
     os.makedirs("history")
 
 if __name__ == "__main__":

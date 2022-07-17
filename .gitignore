@@ -9,7 +9,6 @@ __pycache__/
 # My own
 *.mp4
 *.wav
-*.png
 mainwindow.py
 
 # Distribution / packaging

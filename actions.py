@@ -1,5 +1,5 @@
 import os
-import shutil, cv2
+import shutil
 from pathlib import Path
 
 from PyQt5.QtWidgets import QFileDialog
@@ -10,31 +10,39 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 import history_machine as hm
 
+
 def crop(self):
     cropFirstX = int(self.cropFirstX.text())
     cropFirstY = int(self.cropFirstY.text())
-    cropSecondX = int(self.cropSecondX.text()) 
+    cropSecondX = int(self.cropSecondX.text())
     cropSecondY = int(self.cropSecondY.text())
-    process_video(1, funcFrame=lambda x, y: f.crop(x, y, cropFirstX, cropFirstY, cropSecondX, cropSecondY), hw=(cropSecondY - cropFirstY, cropSecondX - cropFirstY))
+    process_video(1,
+                  funcFrame=lambda x, y:
+                  f.crop(x, y,
+                         cropFirstX, cropFirstY, cropSecondX, cropSecondY),
+                  hw=(cropSecondY - cropFirstY, cropSecondX - cropFirstY))
     self.hw_changed()
+
 
 def put_fragment_left(self):
     put_fragment(self, True)
+
 
 #  Вставить фрагмент
 def put_fragment(self, pos=False):
     clip1 = VideoFileClip("current.mp4")
     clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
     if not pos:
-        final_clip = concatenate_videoclips([clip1,clip2], method="compose")
+        final_clip = concatenate_videoclips([clip1, clip2], method="compose")
     else:
-        final_clip = concatenate_videoclips([clip2,clip1], method="compose")
+        final_clip = concatenate_videoclips([clip2, clip1], method="compose")
     final_clip.write_videofile("current1.mp4")
     clip1.close()
     clip2.close()
     os.remove("current.mp4")
     shutil.copy("current1.mp4", "current.mp4")
     os.remove("current1.mp4")
+
 
 #  Загрузить фрагмент
 def load_fragment(self):
@@ -47,11 +55,16 @@ def load_fragment(self):
     self.putOnLeftButton.setEnabled(True)
     self.putOnRightButton.setEnabled(True)
 
+
 #  Вставить фото
 def add_photo(self):
     leftB = int(self.photoLeftBorder.text())
     rightB = int(self.photoRightBorder.text())
-    process_video(1, funcFrame=lambda x, y: add_photo(leftB, rightB, x, y), funcBegin=lambda x: f.resize_photo(x))
+    process_video(1,
+                  funcFrame=lambda x, y:
+                  add_photo(leftB, rightB, x, y),
+                  funcBegin=lambda x: f.resize_photo(x))
+
 
 #  Выбрать фото для вставки
 def load_photo(self):
@@ -65,6 +78,7 @@ def load_photo(self):
     self.photoRightBorder.setEnabled(True)
     self.addPhotoButton.setEnabled(True)
 
+
 #  Изменить скорость в заданное количество раз
 def change_speed(self):
     speed = float(self.speedEdit.text())
@@ -73,13 +87,18 @@ def change_speed(self):
         return
     self.framesAmount = process_video(speed)
 
+
 #  Повернуть видео на заданный угол
 def rotate(self):
     degrees = float(self.rotateEdit.text())
     self.rotateEdit.setText("0")
     if degrees == 0:
         return
-    process_video(1, funcFrame=lambda x, y: f.rotate_images(x, y, degrees, self.rotateCheckBox.isChecked()))
+    process_video(1,
+                  funcFrame=lambda x, y:
+                  f.rotate_images(x, y,
+                                  degrees, self.rotateCheckBox.isChecked()))
+
 
 #  Обрезать видео
 def cut(self):
@@ -89,7 +108,10 @@ def cut(self):
     framesAmount = self.framesAmount
     self.show_wait()
     self.cutLeftBorder.setText("0")
-    process_video(1, funcIndex=lambda x: f.add(leftB, rightB, x), funcBegin=lambda x:f.cutAudio(leftB, rightB, duration, framesAmount))
+    process_video(1,
+                  funcIndex=lambda x:
+                  f.add(leftB, rightB, x),
+                  funcBegin=lambda x:
+                  f.cutAudio(leftB, rightB, duration, framesAmount))
     hm.add_to_history(self)
     self.play()
-    

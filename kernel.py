@@ -7,7 +7,9 @@ from moviepy.editor import *
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
-def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None, hw=None):
+def process_video(speed,
+                  funcIndex=None, funcFrame=None, funcBegin=None,
+                  hw=None):
     AudioFileClip("current.mp4").write_audiofile((str)(Path("temp/audio.wav")))
 
     vidcap = cv2.VideoCapture("current.mp4")
@@ -16,21 +18,21 @@ def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None, hw=None
     ok, frame = vidcap.read()
     height, width = frame.shape[0], frame.shape[1]
 
-    if hw != None:
-        height, width = hw    
+    if hw is not None:
+        height, width = hw
 
     new_video = cv2.VideoWriter(
         (str)(Path("temp/temp.mp4")), cv2.VideoWriter_fourcc(*"mp4v"),
         frames_per_sec * speed, (width, height))
 
-    if funcBegin != None:
+    if funcBegin is not None:
         funcBegin(frame)
 
     index = 0
     count = 0
     while ok:
-        if funcIndex == None or (funcIndex != None and funcIndex(index)):
-            if funcFrame != None:
+        if funcIndex is None or (funcIndex is not None and funcIndex(index)):
+            if funcFrame is not None:
                 newFrame = funcFrame(index, frame)
                 new_video.write(newFrame)
             else:
@@ -43,7 +45,7 @@ def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None, hw=None
 
     audio = AudioSegment.from_mp3((str)(Path("temp/audio.wav")))
     new_audio = change_audio_speed(audio, speed)
-    new_audio.export((str)(Path("temp/audio.wav")), format = "wav")
+    new_audio.export((str)(Path("temp/audio.wav")), format="wav")
 
     combine_audio(
         (str)(Path("temp/temp.mp4")), (str)(Path("temp/audio.wav")),
@@ -56,7 +58,8 @@ def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None, hw=None
 
 #  Изменяет скорость аудиодорожки
 def change_audio_speed(sound, speed):
-    audio = sound._spawn(sound.raw_data, overrides={"frame_rate": int(sound.frame_rate * speed)})
+    audio = sound._spawn(sound.raw_data,
+                         overrides={"frame_rate": int(sound.frame_rate*speed)})
     return audio.set_frame_rate(sound.frame_rate)
 
 
