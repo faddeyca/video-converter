@@ -12,12 +12,17 @@ from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 import history_machine as hm
 
+def put_fragment_left(self):
+    put_fragment(self, True)
 
 #  Вставить фрагмент
-def put_fragment(self):
+def put_fragment(self, pos=False):
     clip1 = VideoFileClip("current.mp4")
     clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
-    final_clip = concatenate_videoclips([clip1,clip2], method="compose")
+    if not pos:
+        final_clip = concatenate_videoclips([clip1,clip2], method="compose")
+    else:
+        final_clip = concatenate_videoclips([clip2,clip1], method="compose")
     final_clip.write_videofile("current1.mp4")
     clip1.close()
     clip2.close()

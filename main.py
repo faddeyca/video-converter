@@ -60,6 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.photoChooseButton.clicked.connect(lambda: f.load_photo(self))
         self.addPhotoButton.clicked.connect(lambda: self.action(f.add_photo))
         self.fragmentChooseButton.clicked.connect(lambda: f.load_fragment(self))
+        self.putOnLeftButton.clicked.connect(lambda: self.action(f.put_fragment_left))
         self.putOnRightButton.clicked.connect(lambda: self.action(f.put_fragment))
 
         self.slider.sliderMoved.connect(self.setPosition)
