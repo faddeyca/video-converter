@@ -22,6 +22,7 @@ def undo_history(self):
     if self.history_index == 1:
         self.actionUndo.setEnabled(False)
     shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
+    self.hw_changed()
     self.play()
 
 #  Вернуть изменения обрано
@@ -32,4 +33,5 @@ def redo_history(self):
     if self.history_index == self.history_max - 1:
         self.actionRedo.setEnabled(False)
     shutil.copy("history" + (str)(Path("/")) + (str)(self.history_index - 1) + ".mp4", "current.mp4")
+    self.hw_changed()
     self.play()

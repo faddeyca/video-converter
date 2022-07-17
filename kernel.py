@@ -7,7 +7,7 @@ from moviepy.editor import *
 
 
 #  Соединяет кадры в видео с учётом заданной скорости для нового видео
-def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None):
+def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None, hw=None):
     AudioFileClip("current.mp4").write_audiofile((str)(Path("temp/audio.wav")))
 
     vidcap = cv2.VideoCapture("current.mp4")
@@ -15,6 +15,9 @@ def process_video(speed, funcIndex=None, funcFrame=None, funcBegin=None):
     frames_per_sec = vidcap.get(cv2.CAP_PROP_FPS)
     ok, frame = vidcap.read()
     height, width = frame.shape[0], frame.shape[1]
+
+    if hw != None:
+        height, width = hw    
 
     new_video = cv2.VideoWriter(
         (str)(Path("temp/temp.mp4")), cv2.VideoWriter_fourcc(*"mp4v"),

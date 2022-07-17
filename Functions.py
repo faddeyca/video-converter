@@ -1,88 +1,35 @@
-import os
-import shutil
+from pydub import AudioSegment
 from pathlib import Path
+from PIL import Image
+import cv2
+from scipy import ndimage
 
-from PyQt5.QtWidgets import QFileDialog
 
-from functions.kernel import process_video
-from functions.rotator import rotate_images
-from functions.cutter import add, cutAudio
-from functions.photo_adder import add_photo, resize_photo
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+def crop(index, frame, cropFirstX, cropFirstY, cropSecondX, cropSecondY):
+    return frame[cropFirstY:cropSecondY, cropFirstX:cropSecondX]
 
-import history_machine as hm
+def add(leftB, rightB, index):
+    return index >= leftB and index <= rightB
 
-def put_fragment_left(self):
-    put_fragment(self, True)
+def cutAudio(leftB, rightB, duration, framesAmount):
+    leftTime = int(duration * leftB / framesAmount)
+    rightTime = int(duration * rightB / framesAmount)
+    audio = AudioSegment.from_mp3((str)(Path("temp/audio.wav")))
+    new_audio = audio[leftTime:rightTime]
+    new_audio.export((str)(Path("temp/audio.wav")), format = "wav")
 
-#  Вставить фрагмент
-def put_fragment(self, pos=False):
-    clip1 = VideoFileClip("current.mp4")
-    clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
-    if not pos:
-        final_clip = concatenate_videoclips([clip1,clip2], method="compose")
-    else:
-        final_clip = concatenate_videoclips([clip2,clip1], method="compose")
-    final_clip.write_videofile("current1.mp4")
-    clip1.close()
-    clip2.close()
-    os.remove("current.mp4")
-    shutil.copy("current1.mp4", "current.mp4")
-    os.remove("current1.mp4")
+def resize_photo(frame):
+    img = Image.open((str)(Path("temp/photo.png")))
+    height, width = frame.shape[0], frame.shape[1]
+    img = img.resize((width, height), Image.ANTIALIAS)
+    img.save((str)(Path("temp/photo.png")))
 
-#  Загрузить фрагмент
-def load_fragment(self):
-    path = QFileDialog.getOpenFileName(self, "Choose fragment video", "*.mp4")
-    filepath = path[0]
-    if filepath == "":
-        return
-    shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/fragment.mp4")))
-    self.fragmentLabel.setText(filepath)
-    self.putOnLeftButton.setEnabled(True)
-    self.putOnRightButton.setEnabled(True)
 
-#  Вставить фото
-def add_photo(self):
-    leftB = int(self.photoLeftBorder.text())
-    rightB = int(self.photoRightBorder.text())
-    process_video(1, funcFrame=lambda x, y: add_photo(leftB, rightB, x, y), funcBegin=lambda x: resize_photo(x))
+def add_photo(leftB, rightB, index, frame):
+    if index >= leftB and index <= rightB:
+        return cv2.imread((str)(Path("temp/photo.png")))
+    return frame
 
-#  Выбрать фото для вставки
-def load_photo(self):
-    path = QFileDialog.getOpenFileName(self, "Choose photo", "*.png")
-    filepath = path[0]
-    if filepath == "":
-        return
-    shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/photo.png")))
-    self.photoLabel.setText(filepath)
-    self.photoLeftBorder.setEnabled(True)
-    self.photoRightBorder.setEnabled(True)
-    self.addPhotoButton.setEnabled(True)
-
-#  Изменить скорость в заданное количество раз
-def change_speed(self):
-    speed = float(self.speedEdit.text())
-    self.speedEdit.setText("1")
-    if speed == 1.0:
-        return
-    self.framesAmount = process_video(speed)
-
-#  Повернуть видео на заданный угол
-def rotate(self):
-    degrees = float(self.rotateEdit.text())
-    self.rotateEdit.setText("0")
-    if degrees == 0:
-        return
-    process_video(1, funcFrame=lambda x, y: rotate_images(x, degrees, y))
-
-#  Обрезать видео
-def cut(self):
-    leftB = int(self.cutLeftBorder.text())
-    rightB = int(self.cutRightBorder.text())
-    duration = self.duration
-    framesAmount = self.framesAmount
-    self.show_wait()
-    self.cutLeftBorder.setText("0")
-    process_video(1, funcIndex=lambda x: add(leftB, rightB, x), funcBegin=lambda x:cutAudio(leftB, rightB, duration, framesAmount))
-    hm.add_to_history(self)
-    self.play()
+#  Поворачивает все кадры из frames против часовой стрелки на degrees градусов
+def rotate_images(index, frame, degrees, isd):
+    return ndimage.rotate(frame, degrees, reshape=isd)

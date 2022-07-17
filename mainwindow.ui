@@ -39,6 +39,9 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>PLAY</string>
     </property>
@@ -54,6 +57,9 @@
       <width>111</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
      <string>PAUSE</string>
@@ -71,6 +77,9 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>STOP</string>
     </property>
@@ -86,6 +95,9 @@
       <width>111</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
      <string>Rotate</string>
@@ -118,6 +130,9 @@
       <width>111</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
      <string>Set speed</string>
@@ -209,6 +224,9 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>Cut</string>
     </property>
@@ -224,6 +242,9 @@
       <width>111</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
      <string>Choose photo</string>
@@ -291,6 +312,9 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>Add photo</string>
     </property>
@@ -328,6 +352,9 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>Choose fragment</string>
     </property>
@@ -343,6 +370,9 @@
       <width>111</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
     </property>
     <property name="text">
      <string>Put on the right</string>
@@ -360,6 +390,9 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>Put on the left</string>
     </property>
@@ -368,7 +401,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>110</y>
+      <y>780</y>
       <width>51</width>
       <height>41</height>
      </rect>
@@ -380,7 +413,7 @@
    <widget class="QLineEdit" name="cropFirstY">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>1100</x>
       <y>160</y>
       <width>51</width>
       <height>41</height>
@@ -416,7 +449,7 @@
      <string>0</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="cropButton">
     <property name="enabled">
      <bool>false</bool>
     </property>
@@ -428,8 +461,65 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="text">
      <string>Crop</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="rotateCheckBox">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>1230</x>
+      <y>120</y>
+      <width>76</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reshape</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>790</y>
+      <width>921</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>SizeHorCursor</cursorShape>
+    </property>
+    <property name="lineWidth">
+     <number>2</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="Line" name="line_3">
+    <property name="geometry">
+     <rect>
+      <x>1109</x>
+      <y>200</y>
+      <width>31</width>
+      <height>531</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>SizeVerCursor</cursorShape>
+    </property>
+    <property name="lineWidth">
+     <number>2</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
     </property>
    </widget>
   </widget>
@@ -456,8 +546,19 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
+   <widget class="QMenu" name="menuActions">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <addaction name="actionStart_writting"/>
+    <addaction name="actionStop_writting"/>
+    <addaction name="actionSave_2"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuActions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew_video">
@@ -492,6 +593,38 @@
    </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionStart_writting">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Start writting</string>
+   </property>
+  </action>
+  <action name="actionStop_writting">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Stop writting</string>
+   </property>
+  </action>
+  <action name="actionSave_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Load</string>
    </property>
   </action>
  </widget>

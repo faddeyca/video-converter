@@ -10,7 +10,7 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
 import history_machine as hm
-import Functions as f
+import actions as a
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -27,6 +27,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.slider.setRange(0, 0)
         self.duration = 0
         self.framesAmount = 0
+        self.height = 0
+        self.width = 0
         self.history_index = 0
         self.history_max = 0
 
@@ -54,14 +56,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
-        self.speedApplyButton.clicked.connect(lambda: self.action(f.change_speed))
-        self.rotateButton.clicked.connect(lambda: self.action(f.rotate))
-        self.cutButton.clicked.connect(lambda: f.cut(self))
-        self.photoChooseButton.clicked.connect(lambda: f.load_photo(self))
-        self.addPhotoButton.clicked.connect(lambda: self.action(f.add_photo))
-        self.fragmentChooseButton.clicked.connect(lambda: f.load_fragment(self))
-        self.putOnLeftButton.clicked.connect(lambda: self.action(f.put_fragment_left))
-        self.putOnRightButton.clicked.connect(lambda: self.action(f.put_fragment))
+        self.speedApplyButton.clicked.connect(lambda: self.action(a.change_speed))
+        self.rotateButton.clicked.connect(lambda: self.action(a.rotate))
+        self.cutButton.clicked.connect(lambda: a.cut(self))
+        self.photoChooseButton.clicked.connect(lambda: a.load_photo(self))
+        self.addPhotoButton.clicked.connect(lambda: self.action(a.add_photo))
+        self.fragmentChooseButton.clicked.connect(lambda: a.load_fragment(self))
+        self.putOnLeftButton.clicked.connect(lambda: self.action(a.put_fragment_left))
+        self.putOnRightButton.clicked.connect(lambda: self.action(a.put_fragment))
+        self.cropButton.clicked.connect(lambda: self.action(a.crop))
 
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
@@ -74,14 +77,23 @@ class MainWindow(QtWidgets.QMainWindow):
         hm.add_to_history(self)
         self.play()
 
+    def hw_changed(self):
+        vidcap = cv2.VideoCapture("current.mp4")
+        self.width = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.cropSecondX.setText(str(self.width))
+        self.cropSecondY.setText(str(self.height))
+
     #  Выбрать видео для редактора
     def load_new_video(self):
+        self.mediaPlayer.stop()
         path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
         filepath = path[0]
         if filepath == "":
             return
         shutil.copy(filepath, os.getcwd() + (str)(Path("/current.mp4")))
         hm.add_to_history(self)
+        self.hw_changed()
         self.play()
         self.enable_buttons()
 
@@ -140,6 +152,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cutRightBorder.setEnabled(True)
         self.photoChooseButton.setEnabled(True)
         self.fragmentChooseButton.setEnabled(True)
+        self.rotateCheckBox.setEnabled(True)
+        self.cropButton.setEnabled(True)
 
 
 def create_temp_dir():
