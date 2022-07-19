@@ -4,7 +4,7 @@ import cv2
 import shutil
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow
+from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow, QMessageBox
 from PyQt5.QtCore import QUrl
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -78,6 +78,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.slider.sliderMoved.connect(self.setPosition)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
+
+    def error(self, text):
+        msg = QMessageBox()
+        msg.setWindowTitle("Error")
+        msg.setText(text)
+        msg.setIcon(QMessageBox.Warning)
+        msg.exec_()
 
     def action(self, func):
         self.show_wait()

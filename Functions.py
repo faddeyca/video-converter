@@ -35,5 +35,5 @@ def add_photo(leftB, rightB, index, frame):
 
 
 #  Поворачивает все кадры из frames против часовой стрелки на degrees градусов
-def rotate_images(index, frame, degrees, isd):
-    return ndimage.rotate(frame, degrees, reshape=isd)
+def rotate_image(index, frame, degrees, isd):
+    return ndimage.rotate(frame, degrees, reshape=True)

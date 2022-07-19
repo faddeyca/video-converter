@@ -1,5 +1,6 @@
 import os
 import shutil
+import cv2
 from pathlib import Path
 
 from PyQt5.QtWidgets import QFileDialog
@@ -85,19 +86,35 @@ def change_speed(self):
     self.speedEdit.setText("1")
     if speed == 1.0:
         return
+    if speed <= 0:
+        self.error("Speed value must be greater than 0")
+        return
     self.framesAmount = process_video(speed)
 
 
 #  Повернуть видео на заданный угол
 def rotate(self):
-    degrees = float(self.rotateEdit.text())
+    degrees = float(self.rotateEdit.text()) % 360
     self.rotateEdit.setText("0")
     if degrees == 0:
         return
-    process_video(1,
-                  funcFrame=lambda x, y:
-                  f.rotate_images(x, y,
-                                  degrees, self.rotateCheckBox.isChecked()))
+    if self.rotateCheckBox.isChecked():
+        vidcap = cv2.VideoCapture("current.mp4")
+        ok, frame = vidcap.read()
+        image = f.rotate_image(0, frame, degrees, True)
+        hw = image.shape[0], image.shape[1]
+        process_video(1,
+                    funcFrame=lambda x, y:
+                    f.rotate_image(x, y,
+                                    degrees,
+                                    True),
+                    hw=hw)
+    else:
+        process_video(1,
+                    funcFrame=lambda x, y:
+                    f.rotate_image(x, y,
+                                    degrees,
+                                    False))
 
 
 #  Обрезать видео
