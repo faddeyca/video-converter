@@ -87,7 +87,7 @@ def change_speed(self):
     if speed == 1.0:
         return
     if speed <= 0:
-        self.error("Speed value must be greater than 0")
+        self.error("Speed value must be > 0")
         return
     self.framesAmount = process_video(speed)
 
@@ -120,7 +120,17 @@ def rotate(self):
 #  Обрезать видео
 def cut(self):
     leftB = int(self.cutLeftBorder.text())
+    if leftB < 0:
+        self.error("Cut left border must be >= 0")
+        self.cutLeftBorder.setText("0")
+        return
     rightB = int(self.cutRightBorder.text())
+    if rightB > self.framesAmount:
+        self.error(f"Cut right border must be <= than frames amount ({self.framesAmount})")
+        self.cutRightBorder.setText(str(self.framesAmount))
+        return
+    if leftB == 0 and rightB == self.framesAmount:
+        return
     duration = self.duration
     framesAmount = self.framesAmount
     self.show_wait()

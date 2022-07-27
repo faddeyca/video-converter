@@ -169,6 +169,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fragmentChooseButton.setEnabled(True)
         self.rotateCheckBox.setEnabled(True)
         self.cropButton.setEnabled(True)
+        self.cropFirstX.setEnabled(True)
+        self.cropFirstY.setEnabled(True)
+        self.cropSecondX.setEnabled(True)
+        self.cropSecondY.setEnabled(True)
 
 
 def create_temp_dir():
