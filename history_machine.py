@@ -5,6 +5,9 @@ from pathlib import Path
 
 #  Добавить в историю
 def add_to_history(self):
+    '''
+    Добавляет текущее видео в историю
+    '''
     self.actionRedo.setEnabled(False)
     for i in range(self.history_index + 1, self.history_max - 1):
         os.remove("history"+(str)(Path("/"))+(str)(i) + ".mp4")
@@ -18,6 +21,9 @@ def add_to_history(self):
 
 #  Откатить изменения
 def undo_history(self):
+    '''
+    Заменяет текущее видео на предыдущую версию
+    '''
     self.show_wait()
     self.actionRedo.setEnabled(True)
     self.history_index -= 1
@@ -32,6 +38,9 @@ def undo_history(self):
 
 #  Вернуть изменения обрано
 def redo_history(self):
+    '''
+    Возвращает видео после undo
+    '''
     self.show_wait()
     self.actionUndo.setEnabled(True)
     self.history_index += 1

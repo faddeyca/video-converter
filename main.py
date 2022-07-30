@@ -61,7 +61,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateButton.clicked.connect(
             lambda: self.action(a.rotate))
         self.cutButton.clicked.connect(
-            lambda: a.cut(self))
+            lambda: self.action(a.cut))
         self.photoChooseButton.clicked.connect(
             lambda: a.load_photo(self))
         self.addPhotoButton.clicked.connect(

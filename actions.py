@@ -13,24 +13,31 @@ import history_machine as hm
 
 
 def crop(self):
+    '''
+    Обрезает видео по пикселям(кроп)
+    '''
     cropFirstX = int(self.cropFirstX.text())
     cropFirstY = int(self.cropFirstY.text())
     cropSecondX = int(self.cropSecondX.text())
     cropSecondY = int(self.cropSecondY.text())
-    process_video(1,
-                  funcFrame=lambda x, y:
-                  f.crop(x, y,
+    process_video(funcFrame=lambda x, y:
+                  f.crop(y,
                          cropFirstX, cropFirstY, cropSecondX, cropSecondY),
                   hw=(cropSecondY - cropFirstY, cropSecondX - cropFirstY))
     self.hw_changed()
 
 
 def put_fragment_left(self):
+    '''
+    Вставляет фрагмент налево
+    '''
     put_fragment(self, True)
 
 
-#  Вставить фрагмент
 def put_fragment(self, pos=False):
+    '''
+    Вставляет фрагмент налево или направо. По умолчанию направо
+    '''
     clip1 = VideoFileClip("current.mp4")
     clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
     if not pos:
@@ -45,30 +52,35 @@ def put_fragment(self, pos=False):
     os.remove("current1.mp4")
 
 
-#  Загрузить фрагмент
 def load_fragment(self):
+    '''
+    Загружает фрагмент для вставки
+    '''
     path = QFileDialog.getOpenFileName(self, "Choose fragment video", "*.mp4")
     filepath = path[0]
     if filepath == "":
         return
-    shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/fragment.mp4")))
+    shutil.copy(filepath, os.getcwd() + str(Path("/temp/fragment.mp4")))
     self.fragmentLabel.setText(filepath)
     self.putOnLeftButton.setEnabled(True)
     self.putOnRightButton.setEnabled(True)
 
 
-#  Вставить фото
 def add_photo(self):
+    '''
+    Вставляет статическое изображение
+    '''
     leftB = int(self.photoLeftBorder.text())
     rightB = int(self.photoRightBorder.text())
-    process_video(1,
-                  funcFrame=lambda x, y:
-                  add_photo(leftB, rightB, x, y),
+    process_video(funcFrame=lambda x, y:
+                  f.add_photo(leftB, rightB, x, y),
                   funcBegin=lambda x: f.resize_photo(x))
 
 
-#  Выбрать фото для вставки
 def load_photo(self):
+    '''
+    Загружает статическое изображение для вставки
+    '''
     path = QFileDialog.getOpenFileName(self, "Choose photo", "*.png")
     filepath = path[0]
     if filepath == "":
@@ -80,8 +92,10 @@ def load_photo(self):
     self.addPhotoButton.setEnabled(True)
 
 
-#  Изменить скорость в заданное количество раз
 def change_speed(self):
+    '''
+    Изменяет скорость видео
+    '''
     speed = float(self.speedEdit.text())
     self.speedEdit.setText("1")
     if speed == 1.0:
@@ -89,11 +103,13 @@ def change_speed(self):
     if speed <= 0:
         self.error("Speed value must be > 0")
         return
-    self.framesAmount = process_video(speed)
+    self.framesAmount = process_video(speed=speed)
 
 
-#  Повернуть видео на заданный угол
 def rotate(self):
+    '''
+    Поворачивает видео на заданный угол
+    '''
     degrees = float(self.rotateEdit.text()) % 360
     self.rotateEdit.setText("0")
     if degrees == 0:
@@ -101,24 +117,25 @@ def rotate(self):
     if self.rotateCheckBox.isChecked():
         vidcap = cv2.VideoCapture("current.mp4")
         ok, frame = vidcap.read()
-        image = f.rotate_image(0, frame, degrees, True)
+        image = f.rotate_image(frame, degrees, True)
         hw = image.shape[0], image.shape[1]
-        process_video(1,
-                    funcFrame=lambda x, y:
-                    f.rotate_image(x, y,
-                                    degrees,
-                                    True),
-                    hw=hw)
+        process_video(funcFrame=lambda x, y:
+                      f.rotate_image(y,
+                                     degrees,
+                                     True),
+                      hw=hw)
+        self.hw_changed()
     else:
-        process_video(1,
-                    funcFrame=lambda x, y:
-                    f.rotate_image(x, y,
-                                    degrees,
-                                    False))
+        process_video(funcFrame=lambda x, y:
+                      f.rotate_image(y,
+                                     degrees,
+                                     False))
 
 
-#  Обрезать видео
 def cut(self):
+    '''
+    Обрезает видео
+    '''
     leftB = int(self.cutLeftBorder.text())
     if leftB < 0:
         self.error("Cut left border must be >= 0")
@@ -133,12 +150,8 @@ def cut(self):
         return
     duration = self.duration
     framesAmount = self.framesAmount
-    self.show_wait()
     self.cutLeftBorder.setText("0")
-    process_video(1,
-                  funcIndex=lambda x:
-                  f.add(leftB, rightB, x),
+    process_video(funcIndex=lambda x:
+                  x >= leftB and x <= rightB,
                   funcBegin=lambda x:
                   f.cutAudio(leftB, rightB, duration, framesAmount))
-    hm.add_to_history(self)
-    self.play()
