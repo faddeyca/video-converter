@@ -23,7 +23,9 @@ def crop(self):
     process_video(funcFrame=lambda x, y:
                   f.crop(y,
                          cropFirstX, cropFirstY, cropSecondX, cropSecondY),
-                  hw=(cropSecondY - cropFirstY, cropSecondX - cropFirstY))
+                  hw=(cropSecondY - cropFirstY, cropSecondX - cropFirstX))
+    self.cropFirstX.setText("0")
+    self.cropFirstY.setText("0")
     self.hw_changed()
 
 
@@ -150,8 +152,11 @@ def cut(self):
         return
     duration = self.duration
     framesAmount = self.framesAmount
+    self.show_wait()
     self.cutLeftBorder.setText("0")
     process_video(funcIndex=lambda x:
                   x >= leftB and x <= rightB,
                   funcBegin=lambda x:
                   f.cutAudio(leftB, rightB, duration, framesAmount))
+    hm.add_to_history(self)
+    self.play()
