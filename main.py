@@ -20,8 +20,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setup()
         self.make_connections()
 
-    #  Настройка
     def setup(self):
+        '''
+        Настраивает редактор
+        '''
         self.videoOutput = self.makeVideoWidget()
         self.mediaPlayer = self.makeMediaPlayer()
         self.slider.setRange(0, 0)
@@ -32,22 +34,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.history_index = 0
         self.history_max = 0
 
-    #  Инициализирует медиаплеер
     def makeMediaPlayer(self):
+        '''
+        Инициализирует медиаплеер
+        '''
         mediaPlayer = QMediaPlayer(self)
         mediaPlayer.setVideoOutput(self.videoOutput)
         return mediaPlayer
 
-    #  Инициализирует видеоплеер
     def makeVideoWidget(self):
+        '''
+        Инициализирует видеоплеер
+        '''
         videoOutput = QVideoWidget(self)
         vbox = QVBoxLayout()
         vbox.addWidget(videoOutput)
         self.videoWidget.setLayout(vbox)
         return videoOutput
 
-    #  Привязывает функции к кнопкам в UI
     def make_connections(self):
+        '''
+        Привязывает функции к кнопкам в UI
+        '''
         self.actionNew_video.triggered.connect(self.load_new_video)
         self.actionSave.triggered.connect(self.save)
         self.actionUndo.triggered.connect(lambda: hm.undo_history(self))
@@ -80,6 +88,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
 
     def error(self, text):
+        '''
+        Выводит сообщение об ошибке
+        '''
         msg = QMessageBox()
         msg.setWindowTitle("Error")
         msg.setText(text)
@@ -87,20 +98,28 @@ class MainWindow(QtWidgets.QMainWindow):
         msg.exec_()
 
     def action(self, func):
+        '''
+        Выполняет действие
+        '''
         self.show_wait()
         func(self)
         hm.add_to_history(self)
         self.play()
 
     def hw_changed(self):
+        '''
+        Меняет переменые, если расширение текущего видео было изменено
+        '''
         vidcap = cv2.VideoCapture("current.mp4")
         self.width = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.cropSecondX.setText(str(self.width))
         self.cropSecondY.setText(str(self.height))
 
-    #  Выбрать видео для редактора
     def load_new_video(self):
+        '''
+        Выбрать видео для редактора
+        '''
         self.mediaPlayer.stop()
         path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
         filepath = path[0]
@@ -112,48 +131,62 @@ class MainWindow(QtWidgets.QMainWindow):
         self.play()
         self.enable_buttons()
 
-    #  Сохранить текущее видео
     def save(self):
+        '''
+        Сохранить текущее видео
+        '''
         path = QFileDialog.getSaveFileName(self, "Save Video")
         filepath = path[0]
         if filepath == "":
             return
         shutil.copy(("current.mp4"), filepath + ".mp4")
 
-    #  Воспроизвести текущее видео
     def play(self):
+        '''
+        Воспроизвести текущее видео
+        '''
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))
         self.mediaPlayer.play()
 
-    #  Действия, когда изменена позиция видео
     def positionChanged(self, position):
+        '''
+        Действия, когда изменена позиция видео
+        '''
         if self.duration == 0:
             return
         curr = int(self.framesAmount*position/self.duration)
-        self.currentFrameLabel.setText(str(curr))
+        self.currentFrameLabel.setText(str(curr) + " / " + str(self.framesAmount))
         self.slider.setValue(position)
 
-    #  Действия, когда продолжительность текущего видео изменилась
     def durationChanged(self, duration):
+        '''
+        Действия, когда продолжительность текущего видео изменилась
+        '''
         vidcap = cv2.VideoCapture("current.mp4")
         self.framesAmount = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.duration = duration
         self.cutRightBorder.setText(str(self.framesAmount))
         self.slider.setRange(0, duration)
 
-    #  Установить позицию в видео
     def setPosition(self, position):
+        '''
+        Установить позицию в видео
+        '''
         self.mediaPlayer.setPosition(position)
 
-    #  Показать ожидание
     def show_wait(self):
+        '''
+        Показать ожидание
+        '''
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("wait.png")))
         self.mediaPlayer.play()
 
-    #  Включить кнопки
     def enable_buttons(self):
+        '''
+        Включить кнопки
+        '''
         self.actionSave.setEnabled(True)
         self.playButton.setEnabled(True)
         self.pauseButton.setEnabled(True)
@@ -176,6 +209,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def create_temp_dir():
+    '''
+    Создать временные директории
+    '''
     files = os.listdir()
     if "temp" in files:
         shutil.rmtree("temp")

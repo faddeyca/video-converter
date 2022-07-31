@@ -17,16 +17,51 @@ def crop(self):
     Обрезает видео по пикселям(кроп)
     '''
     cropFirstX = int(self.cropFirstX.text())
+    if cropFirstX < 0:
+        self.error("Left border value must be >= 0")
+        reset_after_crop(self)
+        return
+
     cropFirstY = int(self.cropFirstY.text())
+    if cropFirstY < 0:
+        self.error("Up border value must be >= 0")
+        reset_after_crop(self)
+        return
+
     cropSecondX = int(self.cropSecondX.text())
+    if cropSecondX > self.width:
+        self.error(f"Right border value must be <= video width ({self.width})")
+        reset_after_crop(self)
+        return
+
     cropSecondY = int(self.cropSecondY.text())
+    if cropSecondY > self.height:
+        t = f"Down border value must be <= video height ({self.height})"
+        self.error(t)
+        reset_after_crop(self)
+        return
+
+    c1 = cropFirstX == 0 and cropFirstY == 0
+    c2 = cropSecondX == self.width and cropSecondY == self.height
+    if c1 and c2:
+        return
+
     process_video(funcFrame=lambda x, y:
                   f.crop(y,
                          cropFirstX, cropFirstY, cropSecondX, cropSecondY),
                   hw=(cropSecondY - cropFirstY, cropSecondX - cropFirstX))
+    self.hw_changed()
+    reset_after_crop(self)
+
+
+def reset_after_crop(self):
+    '''
+    Восстанавливает значения в окошках по умолчанию после кропа
+    '''
     self.cropFirstX.setText("0")
     self.cropFirstY.setText("0")
-    self.hw_changed()
+    self.cropSecondX.setText(str(self.width))
+    self.cropSecondY.setText(str(self.height))
 
 
 def put_fragment_left(self):
@@ -73,7 +108,21 @@ def add_photo(self):
     Вставляет статическое изображение
     '''
     leftB = int(self.photoLeftBorder.text())
+    if leftB < 0:
+        self.error("Add photo left border must be >= 0")
+        self.photoLeftBorder.setText("0")
+        self.photoRightBorder.setText("0")
+        return
+
     rightB = int(self.photoRightBorder.text())
+    if rightB > self.framesAmount:
+        t1 = "Add photo right border must be <= than "
+        t2 = f"frames amount ({self.framesAmount})"
+        self.error(t1 + t2)
+        self.photoLeftBorder.setText("0")
+        self.photoRightBorder.setText("0")
+        return
+
     process_video(funcFrame=lambda x, y:
                   f.add_photo(leftB, rightB, x, y),
                   funcBegin=lambda x: f.resize_photo(x))
@@ -142,10 +191,14 @@ def cut(self):
     if leftB < 0:
         self.error("Cut left border must be >= 0")
         self.cutLeftBorder.setText("0")
+        self.cutRightBorder.setText(str(self.framesAmount))
         return
     rightB = int(self.cutRightBorder.text())
     if rightB > self.framesAmount:
-        self.error(f"Cut right border must be <= than frames amount ({self.framesAmount})")
+        t1 = "Cut right border must be <= than "
+        t2 = f"frames amount ({self.framesAmount})"
+        self.error(t1 + t2)
+        self.cutLeftBorder.setText("0")
         self.cutRightBorder.setText(str(self.framesAmount))
         return
     if leftB == 0 and rightB == self.framesAmount:
