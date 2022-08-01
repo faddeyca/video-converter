@@ -1,7 +1,6 @@
 import os
 import shutil
 import cv2
-from pathlib import Path
 
 from PyQt5.QtWidgets import QFileDialog
 
@@ -76,7 +75,7 @@ def put_fragment(self, pos=False):
     Вставляет фрагмент налево или направо. По умолчанию направо
     '''
     clip1 = VideoFileClip("current.mp4")
-    clip2 = VideoFileClip((str)(Path("temp/fragment.mp4")))
+    clip2 = VideoFileClip("temp" + self.slash + "fragment.mp4")
     if not pos:
         final_clip = concatenate_videoclips([clip1, clip2], method="compose")
     else:
@@ -97,7 +96,7 @@ def load_fragment(self):
     filepath = path[0]
     if filepath == "":
         return
-    shutil.copy(filepath, os.getcwd() + str(Path("/temp/fragment.mp4")))
+    shutil.copy(filepath, "temp" + self.slash + "fragment.mp4")
     self.fragmentLabel.setText(filepath)
     self.putOnLeftButton.setEnabled(True)
     self.putOnRightButton.setEnabled(True)
@@ -136,7 +135,7 @@ def load_photo(self):
     filepath = path[0]
     if filepath == "":
         return
-    shutil.copy(filepath, os.getcwd() + (str)(Path("/temp/photo.png")))
+    shutil.copy(filepath, "temp" + self.slash + "photo.png")
     self.photoLabel.setText(filepath)
     self.photoLeftBorder.setEnabled(True)
     self.photoRightBorder.setEnabled(True)
@@ -147,6 +146,22 @@ def change_speed(self):
     '''
     Изменяет скорость видео
     '''
+    leftB = int(self.speedLeftBorder.text())
+    if leftB < 0:
+        self.error("Speed photo left border must be >= 0")
+        self.speedLeftBorder.setText("0")
+        self.speedRightBorder.setText(str(self.framesAmount))
+        return
+
+    rightB = int(self.speedRightBorder.text())
+    if rightB > self.framesAmount:
+        t1 = "Speed right border must be <= than "
+        t2 = f"frames amount ({self.framesAmount})"
+        self.error(t1 + t2)
+        self.speedLeftBorder.setText("0")
+        self.speedRightBorder.setText(str(self.framesAmount))
+        return
+
     speed = float(self.speedEdit.text())
     self.speedEdit.setText("1")
     if speed == 1.0:
@@ -154,7 +169,11 @@ def change_speed(self):
     if speed <= 0:
         self.error("Speed value must be > 0")
         return
-    self.framesAmount = process_video(speed=speed)
+    
+    if leftB == 0 and rightB == self.framesAmount:
+        self.framesAmount = process_video(speed=speed)
+    else:
+        shutil.copy("current.mp4", )
 
 
 def rotate(self):

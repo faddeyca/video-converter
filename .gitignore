@@ -10,6 +10,7 @@ __pycache__/
 *.mp4
 *.wav
 mainwindow.py
+settings.json
 
 # Distribution / packaging
 .Python

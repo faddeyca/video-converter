@@ -2,6 +2,7 @@ import sys
 import os
 import cv2
 import shutil
+from pathlib import Path
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QMainWindow, QMessageBox
@@ -14,16 +15,17 @@ import actions as a
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, slash):
         QMainWindow.__init__(self)
         uic.loadUi("mainwindow.ui", self)
-        self.setup()
+        self.setup(slash)
         self.make_connections()
 
-    def setup(self):
+    def setup(self, slash):
         '''
         Настраивает редактор
         '''
+        self.slash = slash
         self.videoOutput = self.makeVideoWidget()
         self.mediaPlayer = self.makeMediaPlayer()
         self.slider.setRange(0, 0)
@@ -120,16 +122,16 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Выбрать видео для редактора
         '''
-        self.mediaPlayer.stop()
         path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
         filepath = path[0]
         if filepath == "":
             return
         shutil.copy(filepath, "current.mp4")
         hm.add_to_history(self)
+        self.show_wait()
         self.hw_changed()
         self.play()
-        self.enable_buttons()
+        self.enable_buttons(True)
 
     def save(self):
         '''
@@ -166,6 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
         vidcap = cv2.VideoCapture("current.mp4")
         self.framesAmount = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.duration = duration
+        self.speedRightBorder.setText(str(self.framesAmount))
         self.cutRightBorder.setText(str(self.framesAmount))
         self.slider.setRange(0, duration)
 
@@ -183,29 +186,32 @@ class MainWindow(QtWidgets.QMainWindow):
             QUrl.fromLocalFile("wait.png")))
         self.mediaPlayer.play()
 
-    def enable_buttons(self):
+    def enable_buttons(self, state):
         '''
-        Включить кнопки
+        Включить/выключить кнопки
         '''
-        self.actionSave.setEnabled(True)
-        self.playButton.setEnabled(True)
-        self.pauseButton.setEnabled(True)
-        self.stopButton.setEnabled(True)
-        self.speedEdit.setEnabled(True)
-        self.speedApplyButton.setEnabled(True)
-        self.rotateEdit.setEnabled(True)
-        self.rotateButton.setEnabled(True)
-        self.cutButton.setEnabled(True)
-        self.cutLeftBorder.setEnabled(True)
-        self.cutRightBorder.setEnabled(True)
-        self.photoChooseButton.setEnabled(True)
-        self.fragmentChooseButton.setEnabled(True)
-        self.rotateCheckBox.setEnabled(True)
-        self.cropButton.setEnabled(True)
-        self.cropFirstX.setEnabled(True)
-        self.cropFirstY.setEnabled(True)
-        self.cropSecondX.setEnabled(True)
-        self.cropSecondY.setEnabled(True)
+        self.actionSave.setEnabled(state)
+        self.playButton.setEnabled(state)
+        self.pauseButton.setEnabled(state)
+        self.stopButton.setEnabled(state)
+        self.speedLeftBorder.setEnabled(state)
+        self.speedRightBorder.setEnabled(state)
+        self.speedEdit.setEnabled(state)
+        self.speedApplyButton.setEnabled(state)
+        self.rotateEdit.setEnabled(state)
+        self.rotateButton.setEnabled(state)
+        self.cutButton.setEnabled(state)
+        self.cutLeftBorder.setEnabled(state)
+        self.cutRightBorder.setEnabled(state)
+        self.photoChooseButton.setEnabled(state)
+        self.fragmentChooseButton.setEnabled(state)
+        self.rotateCheckBox.setEnabled(state)
+        self.cropButton.setEnabled(state)
+        self.cropFirstX.setEnabled(state)
+        self.cropFirstY.setEnabled(state)
+        self.cropSecondX.setEnabled(state)
+        self.cropSecondY.setEnabled(state)
+        self.actionDelete.setEnabled(state)
 
 
 def create_temp_dir():
@@ -221,8 +227,9 @@ def create_temp_dir():
     os.makedirs("history")
 
 if __name__ == "__main__":
+    slash = str(Path("/"))
     app = QtWidgets.QApplication([])
-    w = MainWindow()
+    w = MainWindow(slash)
     create_temp_dir()
     w.show()
     sys.exit(app.exec_())
