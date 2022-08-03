@@ -1,6 +1,9 @@
-from ast import Tuple
 import shutil
 from PyQt5.QtWidgets import QFileDialog
+
+import actions as act
+
+import history_machine as hm
 
 
 def start_writting(self):
@@ -35,10 +38,27 @@ def save(self):
     shutil.copy(("actions.txt"), filepath + ".txt")
 
 def load(self):
-    pass
+    path = QFileDialog.getOpenFileName(self, "Choose video", "*.txt")
+    filepath = path[0]
+    if filepath == "":
+        return
+    self.show_wait()
+    shutil.copy(filepath, "actions.txt")
+    with open("actions.txt", "r") as f:
+        for line in f.readlines():
+            now = line.split()
+            if now[0] == "speed":
+                act.change_speed(self, float(now[1]))
+            if now[0] == "rotate":
+                a = False
+                if now[2] == "True":
+                    a = True
+                act.rotate(self, float(now[1]), a)
+    hm.add_to_history(self)
+    self.play()
+
 
 def write_log(self, fname, args):
     if not self.saving:
         return
-    
     self.saver.append((fname, args))
