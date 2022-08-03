@@ -9,11 +9,13 @@ def add_to_history(self):
     '''
     if self.showf:
         return
-    self.actionRedo.setEnabled(False)
+    if self.iswindowed:
+        self.actionRedo.setEnabled(False)
     for i in range(self.history_index + 1, self.history_max - 1):
         os.remove("history"+self.slash+(str)(i) + ".mp4")
     if self.history_index >= 1:
-        self.actionUndo.setEnabled(True)
+        if self.iswindowed:
+            self.actionUndo.setEnabled(True)
     shutil.copy("current.mp4",
                 "history"+self.slash+(str)(self.history_index)+".mp4")
     self.history_index += 1
@@ -26,10 +28,12 @@ def undo_history(self):
     Заменяет текущее видео на предыдущую версию
     '''
     self.show_wait()
-    self.actionRedo.setEnabled(True)
+    if self.iswindowed:
+        self.actionRedo.setEnabled(True)
     self.history_index -= 1
     if self.history_index == 1:
-        self.actionUndo.setEnabled(False)
+        if self.iswindowed:
+            self.actionUndo.setEnabled(False)
     shutil.copy("history" +
                 self.slash + (str)(self.history_index - 1) + ".mp4",
                 "current.mp4")
@@ -43,10 +47,12 @@ def redo_history(self):
     Возвращает видео после undo
     '''
     self.show_wait()
-    self.actionUndo.setEnabled(True)
+    if self.iswindowed:
+        self.actionUndo.setEnabled(True)
     self.history_index += 1
     if self.history_index == self.history_max - 1:
-        self.actionRedo.setEnabled(False)
+        if self.iswindowed:
+            self.actionRedo.setEnabled(False)
     shutil.copy("history" +
                 self.slash + (str)(self.history_index - 1) + ".mp4",
                 "current.mp4")

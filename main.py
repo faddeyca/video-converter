@@ -16,20 +16,25 @@ import actionSaver as acs
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, slash):
-        QMainWindow.__init__(self)
-        uic.loadUi("mainwindow.ui", self)
-        self.setup(slash)
-        self.make_connections()
+    def __init__(self, iswindowed):
+        if iswindowed:
+            QMainWindow.__init__(self)
+            uic.loadUi("mainwindow.ui", self)
+        self.iswindowed = iswindowed
+        self.setup()
+        if self.iswindowed:
+            self.make_connections()
 
-    def setup(self, slash):
+    def setup(self):
         '''
         Настраивает редактор
         '''
-        self.slash = slash
-        self.videoOutput = self.makeVideoWidget()
-        self.mediaPlayer = self.makeMediaPlayer()
-        self.slider.setRange(0, 0)
+        create_temp_dir()
+        self.slash = str(Path("/"))
+        if self.iswindowed:
+            self.videoOutput = self.makeVideoWidget()
+            self.mediaPlayer = self.makeMediaPlayer()
+            self.slider.setRange(0, 0)
         self.duration = 0
         self.durationf = 0
         self.framesAmount = 0
@@ -69,8 +74,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.actionUndo.triggered.connect(lambda: hm.undo_history(self))
         self.actionRedo.triggered.connect(lambda: hm.redo_history(self))
 
-        self.actionStart_writting.triggered.connect(lambda: acs.start_writting(self))
-        self.actionStop_writting.triggered.connect(lambda: acs.stop_writting(self))
+        self.actionStart_writting.triggered.connect(
+            lambda: acs.start_writting(self))
+        self.actionStop_writting.triggered.connect(
+            lambda: acs.stop_writting(self))
         self.actionSave_2.triggered.connect(lambda: acs.save(self))
         self.actionLoad.triggered.connect(lambda: acs.load(self))
 
@@ -104,6 +111,8 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Выводит сообщение об ошибке
         '''
+        if not self.iswindowed:
+            return
         msg = QMessageBox()
         msg.setWindowTitle("Error")
         msg.setText(text)
@@ -123,6 +132,8 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Меняет переменые, если расширение текущего видео было изменено
         '''
+        if not self.iswindowed:
+            return
         vidcap = cv2.VideoCapture("current.mp4")
         self.width = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -133,6 +144,8 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Выбрать видео для редактора
         '''
+        if not self.iswindowed:
+            return
         path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
         filepath = path[0]
         if filepath == "":
@@ -148,6 +161,8 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Сохранить текущее видео
         '''
+        if not self.iswindowed:
+            return
         path = QFileDialog.getSaveFileName(self, "Save Video")
         filepath = path[0]
         if filepath == "":
@@ -158,6 +173,8 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Воспроизвести текущее видео
         '''
+        if not self.iswindowed:
+            return
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))
         self.mediaPlayer.play()
@@ -169,13 +186,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.duration == 0:
             return
         curr = int(self.framesAmount*position/self.duration)
-        self.currentFrameLabel.setText(str(curr) + " / " + str(self.framesAmount))
+        self.currentFrameLabel.setText(
+            str(curr) + " / " + str(self.framesAmount))
         self.slider.setValue(position)
 
     def durationChanged(self, duration):
         '''
         Действия, когда продолжительность текущего видео изменилась
         '''
+        if not self.iswindowed:
+            return
         vidcap = cv2.VideoCapture("current.mp4")
         self.framesAmount = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.duration = duration
@@ -187,12 +207,16 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Установить позицию в видео
         '''
+        if not self.iswindowed:
+            return
         self.mediaPlayer.setPosition(position)
 
     def show_wait(self):
         '''
         Показать ожидание
         '''
+        if not self.iswindowed:
+            return
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("wait.png")))
         self.mediaPlayer.play()
@@ -201,6 +225,8 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         Включить/выключить кнопки
         '''
+        if not self.iswindowed:
+            return
         self.actionSave.setEnabled(state)
         self.actionStart_writting.setEnabled(state)
         self.actionLoad.setEnabled(state)
@@ -239,10 +265,13 @@ def create_temp_dir():
         shutil.rmtree("history")
     os.makedirs("history")
 
-if __name__ == "__main__":
-    slash = str(Path("/"))
+
+def start():
     app = QtWidgets.QApplication([])
-    w = MainWindow(slash)
-    create_temp_dir()
+    w = MainWindow(True)
     w.show()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    start()

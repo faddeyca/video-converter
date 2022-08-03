@@ -13,11 +13,13 @@ def start_writting(self):
     self.saving = True
     self.saver = list()
 
+
 def stop_writting(self):
     self.actionStart_writting.setEnabled(True)
     self.actionStop_writting.setEnabled(False)
     self.actionSave_2.setEnabled(True)
     self.saving = False
+
 
 def save(self):
     with open('actions.txt', 'w') as f:
@@ -36,6 +38,7 @@ def save(self):
     if filepath == "":
         return
     shutil.copy(("actions.txt"), filepath + ".txt")
+
 
 def load(self):
     path = QFileDialog.getOpenFileName(self, "Choose video", "*.txt")
