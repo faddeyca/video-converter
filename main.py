@@ -31,12 +31,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer = self.makeMediaPlayer()
         self.slider.setRange(0, 0)
         self.duration = 0
+        self.durationf = 0
         self.framesAmount = 0
+        self.framesAmountf = 0
         self.height = 0
         self.width = 0
         self.history_index = 0
         self.history_max = 0
         self.saving = False
+        self.showf = False
 
     def makeMediaPlayer(self):
         '''
@@ -75,7 +78,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
         self.stopButton.clicked.connect(self.mediaPlayer.stop)
         self.speedApplyButton.clicked.connect(
-            lambda: self.action(a.change_speed))
+            lambda: a.change_speed(self))
         self.rotateButton.clicked.connect(
             lambda: self.action(a.rotate))
         self.cutButton.clicked.connect(

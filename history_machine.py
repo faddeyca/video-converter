@@ -7,6 +7,8 @@ def add_to_history(self):
     '''
     Добавляет текущее видео в историю
     '''
+    if self.showf:
+        return
     self.actionRedo.setEnabled(False)
     for i in range(self.history_index + 1, self.history_max - 1):
         os.remove("history"+self.slash+(str)(i) + ".mp4")

@@ -93,12 +93,14 @@ def process_video(speed=1,
 
     new_video.release()
 
-    new_audio = change_audio_speed(speed)
-    new_audio.export(str(Path("temp/audio.wav")), format="wav")
+    if not speed == 1:
+        new_audio = change_audio_speed(speed)
+        new_audio.export(str(Path("temp/audio.wav")), format="wav")
 
     combine_audio(frames_per_sec)
 
     os.remove(str(Path("temp/temp.mp4")))
+    os.remove(str(Path("temp/audio.wav")))
 
     return count
 

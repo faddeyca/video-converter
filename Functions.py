@@ -19,7 +19,8 @@ def cutAudio(leftB, rightB, duration, framesAmount):
     rightTime = int(duration * rightB / framesAmount)
     audio = AudioSegment.from_mp3((str)(Path("temp/audio.wav")))
     new_audio = audio[leftTime:rightTime]
-    new_audio.export((str)(Path("temp/audio.wav")), format="wav")
+    out = new_audio.export((str)(Path("temp/audio.wav")), format="wav")
+    out.close()
 
 
 def resize_photo(frame):
