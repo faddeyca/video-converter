@@ -12,6 +12,7 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 
 import history_machine as hm
 import actions as a
+import actionSaver as acs
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -35,6 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.width = 0
         self.history_index = 0
         self.history_max = 0
+        self.saving = False
 
     def makeMediaPlayer(self):
         '''
@@ -60,8 +62,14 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         self.actionNew_video.triggered.connect(self.load_new_video)
         self.actionSave.triggered.connect(self.save)
+
         self.actionUndo.triggered.connect(lambda: hm.undo_history(self))
         self.actionRedo.triggered.connect(lambda: hm.redo_history(self))
+
+        self.actionStart_writting.triggered.connect(lambda: acs.start_writting(self))
+        self.actionStop_writting.triggered.connect(lambda: acs.stop_writting(self))
+        self.actionSave_2.triggered.connect(lambda: acs.save(self))
+        self.actionLoad.triggered.connect(lambda: acs.load(self))
 
         self.playButton.clicked.connect(self.mediaPlayer.play)
         self.pauseButton.clicked.connect(self.mediaPlayer.pause)
@@ -191,6 +199,8 @@ class MainWindow(QtWidgets.QMainWindow):
         Включить/выключить кнопки
         '''
         self.actionSave.setEnabled(state)
+        self.actionStart_writting.setEnabled(state)
+        self.actionLoad.setEnabled(state)
         self.playButton.setEnabled(state)
         self.pauseButton.setEnabled(state)
         self.stopButton.setEnabled(state)
