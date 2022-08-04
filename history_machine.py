@@ -7,7 +7,7 @@ def add_to_history(self):
     '''
     Добавляет текущее видео в историю
     '''
-    if self.showf:
+    if self.saved_flag:
         return
     if self.iswindowed:
         self.actionRedo.setEnabled(False)

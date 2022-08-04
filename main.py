@@ -36,15 +36,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.mediaPlayer = self.makeMediaPlayer()
             self.slider.setRange(0, 0)
         self.duration = 0
-        self.durationf = 0
+        self.duration_saved = 0
         self.framesAmount = 0
-        self.framesAmountf = 0
+        self.framesAmount_saved = 0
         self.height = 0
         self.width = 0
         self.history_index = 0
         self.history_max = 0
         self.saving = False
-        self.showf = False
+        self.saved_flag = False
 
     def makeMediaPlayer(self):
         '''

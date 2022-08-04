@@ -54,9 +54,9 @@ def change_speed(self, speed=None, flag=True, leftB=None, rightB=None):
         self.framesAmount = process_video(speed=speed)
         acs.write_log(self, "speed", speed)
     else:
-        self.showf = True
-        self.durationf = self.duration
-        self.framesAmountf = self.framesAmount
+        self.saved_flag = True
+        self.duration_saved = self.duration
+        self.framesAmount_saved = self.framesAmount
         self.show_wait()
         framesAmount = self.framesAmount
 
@@ -90,7 +90,7 @@ def change_speed(self, speed=None, flag=True, leftB=None, rightB=None):
             c1.close()
             c2.close()
 
-        self.showf = False
+        self.saved_flag = False
 
     hm.add_to_history(self)
     self.play()
@@ -103,7 +103,8 @@ def rotate(self, degrees=None, reshape=None):
     if degrees is None:
         if self.iswindowed:
             degrees = float(self.rotateEdit.text()) % 360
-    self.rotateEdit.setText("0")
+    if self.iswindowed:
+        self.rotateEdit.setText("0")
     if degrees == 0:
         return
     if reshape is None:
@@ -133,7 +134,7 @@ def cut(self, leftB=None, rightB=None):
     '''
     Обрезает видео
     '''
-    if not self.showf:
+    if not self.saved_flag:
         if leftB is None:
             if self.iswindowed:
                 leftB = int(self.cutLeftBorder.text())
@@ -157,11 +158,11 @@ def cut(self, leftB=None, rightB=None):
         if leftB == 0 and rightB == self.framesAmount:
             return
     duration = self.duration
-    if self.showf:
-        duration = self.durationf
+    if self.saved_flag:
+        duration = self.duration_saved
     framesAmount = self.framesAmount
-    if self.showf:
-        framesAmount = self.framesAmountf
+    if self.saved_flag:
+        framesAmount = self.framesAmount_saved
     self.show_wait()
     if self.iswindowed:
         self.cutLeftBorder.setText("0")
@@ -190,11 +191,13 @@ def load_photo(self):
     self.addPhotoButton.setEnabled(True)
 
 
-def add_photo(self):
+def add_photo(self, leftB=None, rightB=None):
     '''
     Вставляет статическое изображение
     '''
-    leftB = int(self.photoLeftBorder.text())
+    if leftB is None:
+        if self.iswindowed:
+            leftB = int(self.photoLeftBorder.text())
     if leftB < 0:
         self.error("Add photo left border must be >= 0")
         if self.iswindowed:
@@ -202,7 +205,9 @@ def add_photo(self):
             self.photoRightBorder.setText("0")
         return
 
-    rightB = int(self.photoRightBorder.text())
+    if rightB is None:
+        if self.iswindowed:
+            rightB = int(self.photoRightBorder.text())
     if rightB > self.framesAmount:
         t1 = "Add photo right border must be <= than "
         t2 = f"frames amount ({self.framesAmount})"
@@ -257,29 +262,38 @@ def put_fragment(self, pos=False):
     clip2.close()
 
 
-def crop(self):
+def crop(self, cropFirstX=None, cropFirstY=None,
+         cropSecondX=None, cropSecondY=None):
     '''
     Обрезает видео по пикселям(кроп)
     '''
-    cropFirstX = int(self.cropFirstX.text())
+    if cropFirstX is None:
+        if self.iswindowed:
+            cropFirstX = int(self.cropFirstX.text())
     if cropFirstX < 0:
         self.error("Left border value must be >= 0")
         reset_after_crop(self)
         return
 
-    cropFirstY = int(self.cropFirstY.text())
+    if cropFirstY is None:
+        if self.iswindowed:
+            cropFirstY = int(self.cropFirstY.text())
     if cropFirstY < 0:
         self.error("Up border value must be >= 0")
         reset_after_crop(self)
         return
 
-    cropSecondX = int(self.cropSecondX.text())
+    if cropSecondX is None:
+        if self.iswindowed:
+            cropSecondX = int(self.cropSecondX.text())
     if cropSecondX > self.width:
         self.error(f"Right border value must be <= video width ({self.width})")
         reset_after_crop(self)
         return
 
-    cropSecondY = int(self.cropSecondY.text())
+    if cropSecondY is None:
+        if self.iswindowed:
+            cropSecondY = int(self.cropSecondY.text())
     if cropSecondY > self.height:
         t = f"Down border value must be <= video height ({self.height})"
         self.error(t)
