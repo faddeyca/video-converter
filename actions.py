@@ -260,12 +260,9 @@ def put_fragment(self, pos=False):
         final_clip = concatenate_videoclips([clip1, clip2], method="compose")
     else:
         final_clip = concatenate_videoclips([clip2, clip1], method="compose")
-    final_clip.write_videofile("current1.mp4")
+    final_clip.write_videofile("current.mp4")
     clip1.close()
     clip2.close()
-    os.remove("current.mp4")
-    shutil.copy("current1.mp4", "current.mp4")
-    os.remove("current1.mp4")
 
 
 def crop(self, cropFirstX=None, cropFirstY=None,
