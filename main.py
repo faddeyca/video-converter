@@ -45,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.history_max = 0
         self.saving = False
         self.saved_flag = False
+        self.loaded_flag = False
 
     def makeMediaPlayer(self):
         '''
@@ -174,6 +175,8 @@ class MainWindow(QtWidgets.QMainWindow):
         Воспроизвести текущее видео
         '''
         if not self.iswindowed:
+            return
+        if self.loaded_flag:
             return
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))

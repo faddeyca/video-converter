@@ -46,17 +46,21 @@ def load(self):
     if filepath == "":
         return
     self.show_wait()
+    self.saved_flag = True
+    self.loaded_flag = True
     shutil.copy(filepath, "actions.txt")
     with open("actions.txt", "r") as f:
         for line in f.readlines():
             now = line.split()
             if now[0] == "speed":
-                act.change_speed(self, float(now[1]))
+                act.change_speed(self, float(now[1]), False)
             if now[0] == "rotate":
                 a = False
                 if now[2] == "True":
                     a = True
                 act.rotate(self, float(now[1]), a)
+    self.saved_flag = False
+    self.loaded_flag = False
     hm.add_to_history(self)
     self.play()
 
