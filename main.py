@@ -176,7 +176,7 @@ class MainWindow(QtWidgets.QMainWindow):
         '''
         if not self.iswindowed:
             return
-        if self.loaded_flag:
+        if self.loaded_flag or self.saved_flag:
             return
         self.mediaPlayer.setMedia(QMediaContent(
             QUrl.fromLocalFile("current.mp4")))

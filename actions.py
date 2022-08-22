@@ -64,31 +64,34 @@ def change_speed(self, speed=None, flag=True, leftB=None, rightB=None):
 
         cut(self, leftB=leftB, rightB=rightB)
         change_speed(self, speed=speed, flag=False)
-        self.show_wait()
         shutil.copy("current.mp4", "temp" + self.slash + "1.mp4")
 
         if leftB != 0:
             shutil.copy("temp" + self.slash + "0.mp4", "current.mp4")
             cut(self, leftB=0, rightB=leftB-1)
-            self.show_wait()
             c1 = VideoFileClip("current.mp4")
             c2 = VideoFileClip("temp" + self.slash + "1.mp4")
-            final_clip = concatenate_videoclips([c1, c2], method="compose")
-            final_clip.write_videofile("current.mp4")
+            final_clip = concatenate_videoclips([c1, c2])
+            final_clip.write_videofile("current1.mp4")
             c1.close()
             c2.close()
+            os.remove("current.mp4")
+            shutil.copy("current1.mp4", "current.mp4")
+            os.remove("current1.mp4")
 
         if rightB != framesAmount:
             shutil.copy("current.mp4", "temp" + self.slash + "1.mp4")
             shutil.copy("temp" + self.slash + "0.mp4", "current.mp4")
             cut(self, leftB=rightB, rightB=framesAmount)
-            self.show_wait()
             c1 = VideoFileClip("current.mp4")
             c2 = VideoFileClip("temp" + self.slash + "1.mp4")
             final_clip = concatenate_videoclips([c2, c1], method="compose")
-            final_clip.write_videofile("current.mp4")
+            final_clip.write_videofile("current1.mp4")
             c1.close()
             c2.close()
+            os.remove("current.mp4")
+            shutil.copy("current1.mp4", "current.mp4")
+            os.remove("current1.mp4")
 
         self.saved_flag = False
 
@@ -257,9 +260,12 @@ def put_fragment(self, pos=False):
         final_clip = concatenate_videoclips([clip1, clip2], method="compose")
     else:
         final_clip = concatenate_videoclips([clip2, clip1], method="compose")
-    final_clip.write_videofile("current.mp4")
+    final_clip.write_videofile("current1.mp4")
     clip1.close()
     clip2.close()
+    os.remove("current.mp4")
+    shutil.copy("current1.mp4", "current.mp4")
+    os.remove("current1.mp4")
 
 
 def crop(self, cropFirstX=None, cropFirstY=None,
