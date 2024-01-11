@@ -7,13 +7,13 @@ from scipy import ndimage
 
 def cutAudio(leftB, rightB, duration, framesAmount):
     '''
-    Обрезает текущее аудио из temp
+    It cuts the current audio from temp.
 
-        Параметры:
-            leftB: Левая граница в кадрах
-            rightB: Правая граница в кадрах
-            duration: Продолжительность аудио
-            framesAmount: Количество кадров
+    Parameters:
+        leftB: Left boundary in frames.
+        rightB: Right boundary in frames.
+        duration: Audio duration.
+        framesAmount: Number of frames.
     '''
     leftTime = int(duration * leftB / framesAmount)
     rightTime = int(duration * rightB / framesAmount)
@@ -25,10 +25,10 @@ def cutAudio(leftB, rightB, duration, framesAmount):
 
 def resize_photo(frame):
     '''
-    Переформатирует вставляемое фото из temp
+    It reformats the inserted photo from temp.
 
-        Параметры:
-            frame: кадр из видео
+    Parameters:
+        frame: Frame from the video.
     '''
     img = Image.open((str)(Path("temp/photo.png")))
     height, width = frame.shape[0], frame.shape[1]
@@ -38,13 +38,13 @@ def resize_photo(frame):
 
 def add_photo(leftB, rightB, index, frame):
     '''
-    Заменяет кадр на статиечское изображение
+    It replaces the frame with a static image.
 
-        Параметры:
-            leftB: Левая граница в кадрах
-            rightB: Правая граница в кадрах
-            index: Индекс кадра
-            frame: Кадр
+    Parameters:
+        leftB: Left boundary in frames.
+        rightB: Right boundary in frames.
+        index: Frame index.
+        frame: Frame.
     '''
     if index >= leftB and index <= rightB:
         return cv2.imread((str)(Path("temp/photo.png")))
@@ -53,25 +53,25 @@ def add_photo(leftB, rightB, index, frame):
 
 def crop(frame, cropFirstX, cropFirstY, cropSecondX, cropSecondY):
     '''
-    Возвращает обрезанный кадр
+    Returns the cropped frame.
 
-        Параметры:
-            frame: Кадр
-            cropFirstX: Левая граница
-            cropFirstY: Верхняя граница
-            cropSecondX: Правая граница
-            cropSecondY: Нижняя граница
+    Parameters:
+        frame: Frame.
+        cropFirstX: Left boundary.
+        cropFirstY: Upper boundary.
+        cropSecondX: Right boundary.
+        cropSecondY: Lower boundary.
     '''
     return frame[cropFirstY:cropSecondY, cropFirstX:cropSecondX]
 
 
 def rotate_image(frame, degrees, reshape):
     '''
-    Поворачивает кадр на degrees градусов против часовой
+    Rotates the frame counterclockwise by degrees degrees.
 
-        Параметры:
-            frame: Кадр
-            degrees: Градусы
-            reshape: Флаг переформатирования
+    Parameters:
+        frame: Frame
+        degrees: Degrees
+        reshape: Reshape flag
     '''
     return ndimage.rotate(frame, degrees, reshape=reshape)

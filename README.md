@@ -1,28 +1,27 @@
-PLAY - запустить проигрывание видео
-PAUSE - поставить видео на паузу
-STOP - остановить проигрывание видео
+PLAY - start video playback
+PAUSE - pause the video
+STOP - stop video playback
 
-File -> New video - Выбрать новое видео для редактора
-File -> Save - Сохранить текущее видео
+File -> New video - Select a new video for the editor
+File -> Save - Save the current video
 
-Edit -> Undo - Откатить изменение
-Edit -> Redo - Вернуть изменение обратно
+Edit -> Undo - Undo the change
+Edit -> Redo - Redo the change
 
-Actions -> Start writting - Начать запись действий
-Actions -> Stop writting - Остановить запись действий
-Actions -> Save - Сохранить последовательность действий для будущего применения
-Actions -> Load - Загрузить последовательность действий и выполнить её
+Actions -> Start writing - Start recording actions
+Actions -> Stop writing - Stop recording actions
+Actions -> Save - Save the sequence of actions for future use
+Actions -> Load - Load the sequence of actions and execute it
 
-Действия:
-1) Изменить скорость - вписать значение новой скоростb в окно слева от кнопки "Set speed" и нажать кнопку "Set speed"(Два окна левее означают гранцы применения). Значение скорости должно быть положительным. Если оставить значение в окне слева "1", то ничего не произойдёт при нажатии кнопки. Чем ближе значение новой скорости к "0", тем дольше происходит обработка, поэтому не рекомендуется ставить слишком низкие значения.
+Actions:
+1) Change speed - enter the value of the new speed in the window to the left of the "Set speed" button and click "Set speed" (The two windows to the left indicate the boundaries of application). The speed value should be positive. If you leave the value in the left window as "1", nothing will happen when you click the button. The closer the value of the new speed is to "0", the longer the processing takes, so it is not recommended to set very low values.
 
-2) Повернуть изображение - вписать градус поворота против часовой стрелки в окно слева от кнопки "Rotate" и нажать кнопку "Rotate". Выбор флага "Reshape" означает будет ли расширение видео подстраиваться под новую картинку. По умолчанию расширение видео не меняется, поэтому часть картинки обрезается при повороте.
+2) Rotate the image - enter the counterclockwise rotation degree in the window to the left of the "Rotate" button and click "Rotate". Selecting the "Reshape" flag determines whether the video extension will adjust to the new image. By default, the video extension remains unchanged, so part of the image is cropped during rotation.
 
-3) Вырезать фрагмент - в два окна слева от кнопки "Cut" вписать левые и правые границы фрагмента, который надо вырезать. Значение в кадрах. Значение левого окна должно быть >= 0 и < значения в правом окне. Значение правого окна должно быть <= количества кадров в видео и > значения в левом окне. По умолчанию в правом окне записано значение равное количеству кадров.
+3) Cut a fragment - in the two windows to the left of the "Cut" button, enter the left and right boundaries of the fragment to be cut. Values in frames. The value in the left window should be >= 0 and < the value in the right window. The value in the right window should be <= the number of frames in the video and > the value in the left window. By default, the right window is set to the number of frames.
 
-4) Вставить статическое изображение - для начала выбрать изображение для вставки нажав кнопку "Choose photo", затем в окна слева от кнопки "Add photo" вписать левую и правую границу в кадрах. После чего нажать кнопку "Add photo". Значения в окнах выставляются аналогично действию "Вырезать фрагмент"
+4) Insert a static image - first, choose an image to insert by clicking the "Choose photo" button, then enter the left and right boundaries in frames in the windows to the left of the "Add photo" button. Then click the "Add photo" button. Values in the windows are set similarly to the "Cut a fragment" action.
 
-5) Склеить фрагменты - выбрать второй фрагмент нажав кнопку "Choose fragment", после чего нажать кнопку "Put on the left" или "Put on the right" - вставить второй фрагмент слева или справа от текущего видео. Расширение полученного видео всегда равно расширению первого исходного видео.
+5) Merge fragments - choose the second fragment by clicking the "Choose fragment" button, then click the "Put on the left" or "Put on the right" button - insert the second fragment to the left or right of the current video. The extension of the resulting video is always equal to the extension of the first original video.
 
-6) Кроп - снизу от окна с видео списать границы кропа по горизонтали, справа от окна с видео границы кропа по вертикали. После чего нажать кнопку "Crop". Значения границ должны быть неотрицательными, не должны превышать количество пикселей в видео по текущей оси, и лева граница должна быть < правой и верхняя < нижней соотвественно.
-
+6) Crop - below the video window, copy the crop boundaries horizontally, and to the right of the video window, copy the crop boundaries vertically. Then click the "Crop" button. The boundary values should be non-negative, should not exceed the number of pixels in the video along the current axis, and the left boundary should be < the right boundary, and the top should be < the bottom, respectively.

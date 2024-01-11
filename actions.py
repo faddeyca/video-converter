@@ -14,7 +14,7 @@ import actionSaver as acs
 
 def change_speed(self, speed=None, flag=True, leftB=None, rightB=None):
     '''
-    Изменяет скорость видео
+    Changes video speed
     '''
     if flag:
         if leftB is None:
@@ -101,7 +101,7 @@ def change_speed(self, speed=None, flag=True, leftB=None, rightB=None):
 
 def rotate(self, degrees=None, reshape=None):
     '''
-    Поворачивает видео на заданный угол
+    Rotates the video
     '''
     if degrees is None:
         if self.iswindowed:
@@ -135,7 +135,7 @@ def rotate(self, degrees=None, reshape=None):
 
 def cut(self, leftB=None, rightB=None):
     '''
-    Обрезает видео
+    Cuts the video
     '''
     if not self.saved_flag:
         if leftB is None:
@@ -179,7 +179,7 @@ def cut(self, leftB=None, rightB=None):
 
 def load_photo(self):
     '''
-    Загружает статическое изображение для вставки
+    Loads the static image
     '''
     if not self.iswindowed:
         return
@@ -196,7 +196,7 @@ def load_photo(self):
 
 def add_photo(self, leftB=None, rightB=None):
     '''
-    Вставляет статическое изображение
+    Adds the static image
     '''
     if leftB is None:
         if self.iswindowed:
@@ -227,7 +227,7 @@ def add_photo(self, leftB=None, rightB=None):
 
 def load_fragment(self, filepath=None):
     '''
-    Загружает фрагмент для вставки
+    Loads the fragment
     '''
     if not self.iswindowed:
         return
@@ -245,14 +245,14 @@ def load_fragment(self, filepath=None):
 
 def put_fragment_left(self):
     '''
-    Вставляет фрагмент налево
+    Puts the fragment on the left
     '''
     put_fragment(self, True)
 
 
 def put_fragment(self, pos=False):
     '''
-    Вставляет фрагмент налево или направо. По умолчанию направо
+    Inserts a fragment to the left or right. Defaults to the right.
     '''
     clip1 = VideoFileClip("current.mp4")
     clip2 = VideoFileClip("temp" + self.slash + "fragment.mp4")
@@ -267,9 +267,6 @@ def put_fragment(self, pos=False):
 
 def crop(self, cropFirstX=None, cropFirstY=None,
          cropSecondX=None, cropSecondY=None):
-    '''
-    Обрезает видео по пикселям(кроп)
-    '''
     if cropFirstX is None:
         if self.iswindowed:
             cropFirstX = int(self.cropFirstX.text())
@@ -317,9 +314,6 @@ def crop(self, cropFirstX=None, cropFirstY=None,
 
 
 def reset_after_crop(self):
-    '''
-    Восстанавливает значения в окошках по умолчанию после кропа
-    '''
     if not self.iswindowed:
         return
     self.cropFirstX.setText("0")

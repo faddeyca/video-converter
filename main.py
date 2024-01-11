@@ -26,9 +26,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.make_connections()
 
     def setup(self):
-        '''
-        Настраивает редактор
-        '''
         create_temp_dir()
         self.slash = str(Path("/"))
         if self.iswindowed:
@@ -48,17 +45,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loaded_flag = False
 
     def makeMediaPlayer(self):
-        '''
-        Инициализирует медиаплеер
-        '''
         mediaPlayer = QMediaPlayer(self)
         mediaPlayer.setVideoOutput(self.videoOutput)
         return mediaPlayer
 
     def makeVideoWidget(self):
-        '''
-        Инициализирует видеоплеер
-        '''
         videoOutput = QVideoWidget(self)
         vbox = QVBoxLayout()
         vbox.addWidget(videoOutput)
@@ -66,9 +57,6 @@ class MainWindow(QtWidgets.QMainWindow):
         return videoOutput
 
     def make_connections(self):
-        '''
-        Привязывает функции к кнопкам в UI
-        '''
         self.actionNew_video.triggered.connect(self.load_new_video)
         self.actionSave.triggered.connect(self.save)
 
@@ -109,9 +97,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.durationChanged.connect(self.durationChanged)
 
     def error(self, text):
-        '''
-        Выводит сообщение об ошибке
-        '''
         if not self.iswindowed:
             return
         msg = QMessageBox()
@@ -121,18 +106,12 @@ class MainWindow(QtWidgets.QMainWindow):
         msg.exec_()
 
     def action(self, func):
-        '''
-        Выполняет действие
-        '''
         self.show_wait()
         func(self)
         hm.add_to_history(self)
         self.play()
 
     def hw_changed(self):
-        '''
-        Меняет переменые, если расширение текущего видео было изменено
-        '''
         if not self.iswindowed:
             return
         vidcap = cv2.VideoCapture("current.mp4")
@@ -142,9 +121,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cropSecondY.setText(str(self.height))
 
     def load_new_video(self):
-        '''
-        Выбрать видео для редактора
-        '''
         if not self.iswindowed:
             return
         path = QFileDialog.getOpenFileName(self, "Choose video", "*.mp4")
@@ -159,9 +135,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.enable_buttons(True)
 
     def save(self):
-        '''
-        Сохранить текущее видео
-        '''
         if not self.iswindowed:
             return
         path = QFileDialog.getSaveFileName(self, "Save Video")
@@ -171,9 +144,6 @@ class MainWindow(QtWidgets.QMainWindow):
         shutil.copy(("current.mp4"), filepath + ".mp4")
 
     def play(self):
-        '''
-        Воспроизвести текущее видео
-        '''
         if not self.iswindowed:
             return
         if self.loaded_flag or self.saved_flag:
@@ -183,9 +153,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.play()
 
     def positionChanged(self, position):
-        '''
-        Действия, когда изменена позиция видео
-        '''
         if self.duration == 0:
             return
         curr = int(self.framesAmount*position/self.duration)
@@ -194,9 +161,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.slider.setValue(position)
 
     def durationChanged(self, duration):
-        '''
-        Действия, когда продолжительность текущего видео изменилась
-        '''
         if not self.iswindowed:
             return
         vidcap = cv2.VideoCapture("current.mp4")
@@ -207,17 +171,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.slider.setRange(0, duration)
 
     def setPosition(self, position):
-        '''
-        Установить позицию в видео
-        '''
         if not self.iswindowed:
             return
         self.mediaPlayer.setPosition(position)
 
     def show_wait(self):
-        '''
-        Показать ожидание
-        '''
         if not self.iswindowed:
             return
         self.mediaPlayer.setMedia(QMediaContent(
@@ -225,9 +183,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mediaPlayer.play()
 
     def enable_buttons(self, state):
-        '''
-        Включить/выключить кнопки
-        '''
         if not self.iswindowed:
             return
         self.actionSave.setEnabled(state)
@@ -257,9 +212,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def create_temp_dir():
-    '''
-    Создать временные директории
-    '''
     files = os.listdir()
     if "temp" in files:
         shutil.rmtree("temp")

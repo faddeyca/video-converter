@@ -2,11 +2,7 @@ import os
 import shutil
 
 
-#  Добавить в историю
 def add_to_history(self):
-    '''
-    Добавляет текущее видео в историю
-    '''
     if self.saved_flag:
         return
     if self.iswindowed:
@@ -22,11 +18,7 @@ def add_to_history(self):
     self.history_max = self.history_index + 1
 
 
-#  Откатить изменения
 def undo_history(self):
-    '''
-    Заменяет текущее видео на предыдущую версию
-    '''
     self.show_wait()
     if self.iswindowed:
         self.actionRedo.setEnabled(True)
@@ -41,11 +33,7 @@ def undo_history(self):
     self.play()
 
 
-#  Вернуть изменения обрано
 def redo_history(self):
-    '''
-    Возвращает видео после undo
-    '''
     self.show_wait()
     if self.iswindowed:
         self.actionUndo.setEnabled(True)
